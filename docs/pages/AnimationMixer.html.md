@@ -1,133 +1,135 @@
-# AnimationMixer
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-`AnimationMixer` is a player for animations on a particular object in the scene. When multiple objects in the scene are animated independently, one `AnimationMixer` may be used for each object.
+# AnimationMixer(动画混合器)
 
-## Constructor
+`AnimationMixer` 是针对场景中某个特定对象的动画播放器。当场景中的多个对象需要各自独立地播放动画时,可以为每个对象各使用一个 `AnimationMixer`。
+
+## 构造函数
 
 ### new AnimationMixer( root : Object3D )
 
-Constructs a new animation mixer.
+创建一个新动画混合器。
 
 **root**
 
-The object whose animations shall be played by this mixer.
+要由该混合器播放其动画的对象。
 
-## Properties
+## 属性
 
 ### .time : number
 
-The global mixer time (in seconds; starting with `0` on the mixer's creation).
+混合器的全局时间(单位:秒;混合器创建时从 `0` 开始计)。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .timeScale : number
 
-A scaling factor for the global time.
+全局时间的缩放系数。
 
-Note: Setting this member to `0` and later back to `1` is a possibility to pause/unpause all actions that are controlled by this mixer.
+注意:把该成员设为 `0`,之后再恢复为 `1`,即可实现暂停/恢复该混合器控制的所有动作(action)。
 
-Default is `1`.
+默认值为 `1`。
 
-## Methods
+## 方法
 
 ### .clipAction( clip : AnimationClip | string, optionalRoot : Object3D, blendMode : NormalAnimationBlendMode | AdditiveAnimationBlendMode ) : AnimationAction
 
-Returns an instance of [AnimationAction](AnimationAction.html) for the passed clip.
+返回传入动画剪辑(clip)对应的 [AnimationAction](AnimationAction.html) 实例。
 
-If an action fitting the clip and root parameters doesn't yet exist, it will be created by this method. Calling this method several times with the same clip and root parameters always returns the same action.
+如果与该剪辑和根对象参数匹配的动作尚不存在,该方法会自动创建。用相同的剪辑与根对象参数多次调用该方法,始终返回同一个动作。
 
 **clip**
 
-An animation clip or alternatively the name of the animation clip.
+动画剪辑,或动画剪辑的名称。
 
 **optionalRoot**
 
-An alternative root object.
+替代用的根对象。
 
 **blendMode**
 
-The blend mode.
+混合模式。
 
-**Returns:** The animation action.
+**返回值:** 动画动作。
 
 ### .existingAction( clip : AnimationClip | string, optionalRoot : Object3D ) : AnimationAction
 
-Returns an existing animation action for the passed clip.
+返回传入剪辑对应的既有动画动作。
 
 **clip**
 
-An animation clip or alternatively the name of the animation clip.
+动画剪辑,或动画剪辑的名称。
 
 **optionalRoot**
 
-An alternative root object.
+替代用的根对象。
 
-**Returns:** The animation action. Returns `null` if no action was found.
+**返回值:** 动画动作。若未找到对应动作则返回 `null`。
 
 ### .getRoot() : Object3D
 
-Returns this mixer's root object.
+返回该混合器的根对象。
 
-**Returns:** The mixer's root object.
+**返回值:** 混合器的根对象。
 
 ### .setTime( time : number ) : AnimationMixer
 
-Sets the global mixer to a specific time and updates the animation accordingly.
+将混合器的全局时间设为指定时刻,并相应地更新动画。
 
-This is useful when you need to jump to an exact time in an animation. The input parameter will be scaled by [AnimationMixer#timeScale](AnimationMixer.html#timeScale)
+当你需要跳转到动画中的精确时刻时,该方法非常有用。输入参数会乘以 [AnimationMixer#timeScale](AnimationMixer.html#timeScale) 进行缩放。
 
 **time**
 
-The time to set in seconds.
+要设置的时间,单位为秒。
 
-**Returns:** A reference to this animation mixer.
+**返回值:** 该动画混合器的引用。
 
 ### .stopAllAction() : AnimationMixer
 
-Deactivates all previously scheduled actions on this mixer.
+停用该混合器上此前调度的所有动作。
 
-**Returns:** A reference to this animation mixer.
+**返回值:** 该动画混合器的引用。
 
 ### .uncacheAction( clip : AnimationClip | string, optionalRoot : Object3D )
 
-Deallocates all memory resources for an action. The action is identified by the given clip and an optional root object. Before using this method make sure to call [AnimationAction#stop](AnimationAction.html#stop) to deactivate the action.
+释放某个动作占用的全部内存资源。该动作由给定的剪辑与可选的根对象标识。使用该方法前,请确保先调用 [AnimationAction#stop](AnimationAction.html#stop) 将该动作停用。
 
 **clip**
 
-An animation clip or alternatively the name of the animation clip.
+动画剪辑,或动画剪辑的名称。
 
 **optionalRoot**
 
-An alternative root object.
+替代用的根对象。
 
 ### .uncacheClip( clip : AnimationClip )
 
-Deallocates all memory resources for a clip. Before using this method make sure to call [AnimationAction#stop](AnimationAction.html#stop) for all related actions.
+释放某个剪辑占用的全部内存资源。使用该方法前,请确保先对所有相关动作调用 [AnimationAction#stop](AnimationAction.html#stop)。
 
 **clip**
 
-The clip to uncache.
+要解除缓存的剪辑。
 
 ### .uncacheRoot( root : Object3D )
 
-Deallocates all memory resources for a root object. Before using this method make sure to call [AnimationAction#stop](AnimationAction.html#stop) for all related actions or alternatively [AnimationMixer#stopAllAction](AnimationMixer.html#stopAllAction) when the mixer operates on a single root.
+释放某个根对象占用的全部内存资源。使用该方法前,请确保先对所有相关动作调用 [AnimationAction#stop](AnimationAction.html#stop);若混合器只作用于单个根对象,也可以直接调用 [AnimationMixer#stopAllAction](AnimationMixer.html#stopAllAction)。
 
 **root**
 
-The root object to uncache.
+要解除缓存的根对象。
 
 ### .update( deltaTime : number ) : AnimationMixer
 
-Advances the global mixer time and updates the animation.
+推进混合器的全局时间并更新动画。
 
-This is usually done in the render loop by passing the delta time from [Clock](Clock.html) or [Timer](Timer.html).
+这一步通常在渲染循环中完成,传入来自 [Clock](Clock.html) 或 [Timer](Timer.html) 的间隔时间。
 
 **deltaTime**
 
-The delta time in seconds.
+间隔时间,单位为秒。
 
-**Returns:** A reference to this animation mixer.
+**返回值:** 该动画混合器的引用。
 
-## Source
+## 源码
 
 [src/animation/AnimationMixer.js](https://github.com/mrdoob/three.js/blob/master/src/animation/AnimationMixer.js)
