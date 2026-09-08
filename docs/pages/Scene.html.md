@@ -1,81 +1,83 @@
-*Inheritance: EventDispatcher → Object3D →*
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-# Scene
+*继承关系:EventDispatcher → Object3D →*
 
-Scenes allow you to set up what is to be rendered and where by three.js. This is where you place 3D objects like meshes, lines or lights.
+# Scene(场景)
 
-## Constructor
+场景(Scene)允许你设置 three.js 要渲染的内容以及渲染发生的位置。网格(Mesh)、线条(Line)、灯光(Light)等 3D 对象都放置在这里。
+
+## 构造函数
 
 ### new Scene()
 
-Constructs a new scene.
+创建一个新场景。
 
-## Properties
+## 属性
 
 ### .background : Color | Texture
 
-Defines the background of the scene. Valid inputs are:
+定义场景的背景。有效输入包括:
 
-*   A color for defining a uniform colored background.
-*   A texture for defining a (flat) textured background.
-*   Cube textures or equirectangular textures for defining a skybox.
+*   一个颜色值(Color),用于定义纯色背景。
+*   一张纹理(Texture),用于定义(平面)纹理背景。
+*   立方体贴图纹理或等距柱状(equirectangular)纹理,用于定义天空盒。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .backgroundBlurriness : number
 
-Sets the blurriness of the background. Only influences environment maps assigned to [Scene#background](Scene.html#background). Valid input is a float between `0` and `1`.
+设置背景的模糊程度。仅对赋给 [Scene#background](Scene.html#background) 的环境贴图生效。有效输入为 `0` 到 `1` 之间的浮点数。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .backgroundIntensity : number
 
-Attenuates the color of the background. Only applies to background textures.
+衰减背景的颜色强度。仅对背景纹理生效。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .backgroundRotation : Euler
 
-The rotation of the background in radians. Only influences environment maps assigned to [Scene#background](Scene.html#background).
+背景的旋转量,以弧度为单位。仅对赋给 [Scene#background](Scene.html#background) 的环境贴图生效。
 
-Default is `(0,0,0)`.
+默认值为 `(0,0,0)`。
 
 ### .environment : Texture
 
-Sets the environment map for all physical materials in the scene. However, it's not possible to overwrite an existing texture assigned to the `envMap` material property.
+为场景中所有物理材质设置环境贴图。但无法覆盖已赋给材质 `envMap` 属性的既有纹理。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .environmentIntensity : number
 
-Attenuates the color of the environment. Only influences environment maps assigned to [Scene#environment](Scene.html#environment).
+衰减环境的颜色强度。仅对赋给 [Scene#environment](Scene.html#environment) 的环境贴图生效。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .environmentRotation : Euler
 
-The rotation of the environment map in radians. Only influences physical materials in the scene when [Scene#environment](Scene.html#environment) is used.
+环境贴图的旋转量,以弧度为单位。仅在场景使用 [Scene#environment](Scene.html#environment) 时对物理材质生效。
 
-Default is `(0,0,0)`.
+默认值为 `(0,0,0)`。
 
 ### .fog : Fog | FogExp2
 
-A fog instance defining the type of fog that affects everything rendered in the scene.
+一个雾(Fog)实例,定义影响场景中所有渲染对象的雾效类型。
 
-Default is `null`.
+默认值为 `null`。
 
-### .isScene : boolean (readonly)
+### .isScene : boolean (只读)
 
-This flag can be used for type testing.
+该标志可用于类型判断。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .overrideMaterial : Material
 
-Forces everything in the scene to be rendered with the defined material. It is possible to exclude materials from override by setting [Material#allowOverride](Material.html#allowOverride) to `false`.
+强制场景中的所有对象都使用指定材质渲染。可以通过将 [Material#allowOverride](Material.html#allowOverride) 设为 `false`,把某些材质排除在强制覆盖之外。
 
-Default is `null`.
+默认值为 `null`。
 
-## Source
+## 源码
 
 [src/scenes/Scene.js](https://github.com/mrdoob/three.js/blob/master/src/scenes/Scene.js)

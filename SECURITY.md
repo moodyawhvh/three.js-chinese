@@ -1,18 +1,16 @@
-# Security Policy
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-If you have discovered a security vulnerability in this project, please report it
-privately. **Do not disclose it as a public issue.** This gives us time to work with you
-to fix the issue before public exposure, reducing the chance that the exploit will be
-used before a patch is released.
+# 安全策略(Security Policy)
 
-You may submit the report in the following ways:
+如果你在本项目中发现了安全漏洞,请以私密方式上报。**不要将其作为公开 issue 披露。**这样我们才有时间与你合作,在漏洞公开前完成修复,降低漏洞在补丁发布前被利用的风险。
 
-- Send an email to hello@mrdoob.com.
+你可以通过以下方式提交报告:
 
-Please provide the following information in your report:
+- 发送邮件至 hello@mrdoob.com。
 
-- A description of the vulnerability and its impact.
-- How to reproduce the issue.
+请在报告中提供以下信息:
 
-This project is maintained by volunteers on a reasonable-effort basis. As such,
-we ask that you give us 90 days to work on a fix before public exposure.
+- 漏洞描述及其影响范围。
+- 复现步骤。
+
+本项目由志愿者在"尽力而为"的基础上维护。因此,我们请求在漏洞公开披露之前,给我们 90 天的时间来完成修复。
