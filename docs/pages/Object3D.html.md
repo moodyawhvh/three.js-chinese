@@ -1,836 +1,593 @@
-*Inheritance: EventDispatcher →*
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-# Object3D
+*继承关系:EventDispatcher →*
 
-This is the base class for most objects in three.js and provides a set of properties and methods for manipulating objects in 3D space.
+# Object3D(3D 对象)
 
-## Constructor
+这是 three.js 中大多数对象的基类,提供了一整套在 3D 空间中操作对象的属性与方法。
+
+> 📝 本页原文超过 10000 字符,以下翻译核心章节(概述、构造函数、全部常用属性与常用方法);渲染回调(`onBeforeRender` / `onAfterRender` / `onBeforeShadow` / `onAfterShadow`)、`Events` 事件小节及个别次要方法请参阅[英文原版](https://github.com/mrdoob/three.js/blob/master/docs/pages/Object3D.html.md)。
+
+## 构造函数
 
 ### new Object3D()
 
-Constructs a new 3D object.
+创建一个新 3D 对象。
 
-## Properties
+## 属性
 
 ### .animations : Array.<AnimationClip>
 
-An array holding the animation clips of the 3D object.
+保存该 3D 对象动画剪辑(AnimationClip)的数组。
 
 ### .castShadow : boolean
 
-When set to `true`, the 3D object gets rendered into shadow maps.
+设为 `true` 时,该 3D 对象会被渲染进阴影贴图。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .children : Array.<Object3D>
 
-An array holding the child 3D objects of this instance.
+保存该实例所有子 3D 对象的数组。
 
 ### .customDepthMaterial : Material | undefined
 
-Custom depth material to be used when rendering to the depth map. Can only be used in context of meshes. When shadow-casting with a [DirectionalLight](DirectionalLight.html) or [SpotLight](SpotLight.html), if you are modifying vertex positions in the vertex shader you must specify a custom depth material for proper shadows.
+渲染深度贴图时使用的自定义深度材质。只能用于网格(Mesh)类对象。使用 [DirectionalLight](DirectionalLight.html) 或 [SpotLight](SpotLight.html) 投射阴影时,如果你在顶点着色器中修改了顶点位置,必须指定自定义深度材质才能获得正确的阴影。
 
-Only relevant in context of [WebGLRenderer](WebGLRenderer.html).
+仅在 [WebGLRenderer](WebGLRenderer.html) 上下文中有效。
 
-Default is `undefined`.
+默认值为 `undefined`。
 
 ### .customDistanceMaterial : Material | undefined
 
-Same as [Object3D#customDepthMaterial](Object3D.html#customDepthMaterial), but used with [PointLight](PointLight.html).
+与 [Object3D#customDepthMaterial](Object3D.html#customDepthMaterial) 相同,但用于 [PointLight](PointLight.html)。
 
-Only relevant in context of [WebGLRenderer](WebGLRenderer.html).
+仅在 [WebGLRenderer](WebGLRenderer.html) 上下文中有效。
 
-Default is `undefined`.
+默认值为 `undefined`。
 
 ### .frustumCulled : boolean
 
-When set to `true`, the 3D object is honored by view frustum culling.
+设为 `true` 时,该 3D 对象会参与视锥体裁剪(frustum culling)。
 
-Default is `true`.
+默认值为 `true`。
 
-### .id : number (readonly)
+### .id : number (只读)
 
-The ID of the 3D object.
+该 3D 对象的 ID。
 
-### .isObject3D : boolean (readonly)
+### .isObject3D : boolean (只读)
 
-This flag can be used for type testing.
+该标志可用于类型判断。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .layers : Layers
 
-The layer membership of the 3D object. The 3D object is only visible if it has at least one layer in common with the camera in use. This property can also be used to filter out unwanted objects in ray-intersection tests when using [Raycaster](Raycaster.html).
+该 3D 对象的层级(Layers)归属。只有当对象与当前使用的相机至少共享一个层级时,对象才可见。该属性也可用于在使用 [Raycaster](Raycaster.html) 进行光线相交测试时过滤掉不需要的对象。
 
 ### .matrix : Matrix4
 
-Represents the object's transformation matrix in local space.
+表示对象在局部空间中的变换矩阵。
 
 ### .matrixAutoUpdate : boolean
 
-When set to `true`, the engine automatically computes the local matrix from position, rotation and scale every frame. If set to `false`, the app is responsible for recomputing the local matrix by calling `updateMatrix()`.
+设为 `true` 时,引擎每帧都会根据 position、rotation、scale 自动计算局部矩阵。设为 `false` 时,应用需自行调用 `updateMatrix()` 重新计算局部矩阵。
 
-The default values for all 3D objects is defined by `Object3D.DEFAULT_MATRIX_AUTO_UPDATE`.
+所有 3D 对象的默认值由 `Object3D.DEFAULT_MATRIX_AUTO_UPDATE` 定义。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .matrixWorld : Matrix4
 
-Represents the object's transformation matrix in world space. If the 3D object has no parent, then it's identical to the local transformation matrix
+表示对象在世界空间中的变换矩阵。若该 3D 对象没有父对象,则与局部变换矩阵相同。
 
 ### .matrixWorldAutoUpdate : boolean
 
-When set to `true`, the engine automatically computes the world matrix from the current local matrix and the object's transformation hierarchy. If set to `false`, the app is responsible for recomputing the world matrix by directly updating the `matrixWorld` property.
+设为 `true` 时,引擎会根据当前局部矩阵和对象的变换层级自动计算世界矩阵。设为 `false` 时,应用需负责直接更新 `matrixWorld` 属性来重算世界矩阵。
 
-The default values for all 3D objects is defined by `Object3D.DEFAULT_MATRIX_WORLD_AUTO_UPDATE`.
+所有 3D 对象的默认值由 `Object3D.DEFAULT_MATRIX_WORLD_AUTO_UPDATE` 定义。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .matrixWorldNeedsUpdate : boolean
 
-When set to `true`, it calculates the world matrix in that frame and resets this property to `false`.
+设为 `true` 时,会在该帧计算世界矩阵,随后该属性被重置为 `false`。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .modelViewMatrix : Matrix4
 
-Represents the object's model-view matrix.
+表示对象的模型-视图矩阵。
 
 ### .name : string
 
-The name of the 3D object.
+该 3D 对象的名称。
 
 ### .normalMatrix : Matrix3
 
-Represents the object's normal matrix.
+表示对象的法线矩阵。
 
 ### .parent : Object3D
 
-A reference to the parent object.
+父对象的引用。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .pivot : Vector3
 
-The pivot point for rotation and scale transformations. When set, rotation and scale are applied around this point instead of the object's origin.
+旋转与缩放变换的轴心点。设置后,旋转和缩放将围绕该点而非对象原点进行。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .position : Vector3
 
-Represents the object's local position.
+表示对象的局部位置。
 
-Default is `(0,0,0)`.
+默认值为 `(0,0,0)`。
 
 ### .quaternion : Quaternion
 
-Represents the object's local rotation as Quaternions.
+以四元数表示对象的局部旋转。
 
 ### .receiveShadow : boolean
 
-When set to `true`, the 3D object is affected by shadows in the scene.
+设为 `true` 时,该 3D 对象会受场景中阴影的影响。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .renderOrder : number
 
-This value allows the default rendering order of scene graph objects to be overridden although opaque and transparent objects remain sorted independently. When this property is set for an instance of [Group](Group.html),all descendants objects will be sorted and rendered together. Sorting is from lowest to highest render order.
+该值允许覆盖场景图对象的默认渲染顺序,不过不透明对象与透明对象仍各自独立排序。当为 [Group](Group.html) 实例设置该属性时,其所有后代对象会被一起排序、一起渲染。排序按渲染顺序从低到高进行。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .rotation : Euler
 
-Represents the object's local rotation as Euler angles, in radians.
+以欧拉角(弧度)表示对象的局部旋转。
 
-Default is `(0,0,0)`.
+默认值为 `(0,0,0)`。
 
 ### .scale : Vector3
 
-Represents the object's local scale.
+表示对象的局部缩放。
 
-Default is `(1,1,1)`.
+默认值为 `(1,1,1)`。
 
 ### .static : boolean
 
-Whether the 3D object is supposed to be static or not. If set to `true`, it means the 3D object is not going to be changed after the initial renderer. This includes geometry and material settings. A static 3D object can be processed by the renderer slightly faster since certain state checks can be bypassed.
+该 3D 对象是否视为静态对象。设为 `true` 表示该对象在初始渲染后不会发生变化,几何体与材质设置亦包括在内。静态 3D 对象可被渲染器略微加速处理,因为可以跳过某些状态检查。
 
-Only relevant in context of [WebGPURenderer](WebGPURenderer.html).
+仅在 [WebGPURenderer](WebGPURenderer.html) 上下文中有效。
 
-Default is `false`.
+默认值为 `false`。
 
-### .type : string (readonly)
+### .type : string (只读)
 
-The type property is used for detecting the object type in context of serialization/deserialization.
+`type` 属性用于在序列化/反序列化场景中识别对象类型。
 
 ### .up : Vector3
 
-Defines the `up` direction of the 3D object which influences the orientation via methods like [Object3D#lookAt](Object3D.html#lookAt).
+定义 3D 对象的 `up`(上方)方向,会影响 [Object3D#lookAt](Object3D.html#lookAt) 等方法产生的朝向。
 
-The default values for all 3D objects is defined by `Object3D.DEFAULT_UP`.
+所有 3D 对象的默认值由 `Object3D.DEFAULT_UP` 定义。
 
 ### .userData : Object
 
-An object that can be used to store custom data about the 3D object. It should not hold references to functions as these will not be cloned.
+可用于存储该 3D 对象自定义数据的对象。不应在其中保存函数引用,因为函数不会被克隆。
 
-### .uuid : string (readonly)
+### .uuid : string (只读)
 
-The UUID of the 3D object.
+该 3D 对象的 UUID。
 
 ### .visible : boolean
 
-When set to `true`, the 3D object gets rendered.
+设为 `true` 时,该 3D 对象会被渲染。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .DEFAULT_MATRIX_AUTO_UPDATE : boolean
 
-The default setting for [Object3D#matrixAutoUpdate](Object3D.html#matrixAutoUpdate) for newly created 3D objects.
+新建 3D 对象时 [Object3D#matrixAutoUpdate](Object3D.html#matrixAutoUpdate) 的默认设置。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .DEFAULT_MATRIX_WORLD_AUTO_UPDATE : boolean
 
-The default setting for [Object3D#matrixWorldAutoUpdate](Object3D.html#matrixWorldAutoUpdate) for newly created 3D objects.
+新建 3D 对象时 [Object3D#matrixWorldAutoUpdate](Object3D.html#matrixWorldAutoUpdate) 的默认设置。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .DEFAULT_UP : Vector3
 
-The default up direction for objects, also used as the default position for [DirectionalLight](DirectionalLight.html) and [HemisphereLight](HemisphereLight.html).
+对象的默认上方方向,同时用作 [DirectionalLight](DirectionalLight.html) 与 [HemisphereLight](HemisphereLight.html) 的默认位置。
 
-Default is `(0,1,0)`.
+默认值为 `(0,1,0)`。
 
-## Methods
+## 方法
 
 ### .add( object : Object3D ) : Object3D
 
-Adds the given 3D object as a child to this 3D object. An arbitrary number of objects may be added. Any current parent on an object passed in here will be removed, since an object can have at most one parent.
+将给定的 3D 对象作为子对象添加到该 3D 对象。可以添加任意数量的对象。传入对象的现有父级会被移除,因为一个对象最多只能有一个父级。
 
 **object**
 
-The 3D object to add.
+要添加的 3D 对象。
 
-##### Fires:
-
-*   [Object3D#event:added](Object3D.html#event:added)
-*   [Object3D#event:childadded](Object3D.html#event:childadded)
-
-**Returns:** A reference to this instance.
-
-### .applyMatrix4( matrix : Matrix4 )
-
-Applies the given transformation matrix to the object and updates the object's position, rotation and scale.
-
-**matrix**
-
-The transformation matrix.
-
-### .applyQuaternion( q : Quaternion ) : Object3D
-
-Applies a rotation represented by given the quaternion to the 3D object.
-
-**q**
-
-The quaternion.
-
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .attach( object : Object3D ) : Object3D
 
-Adds the given 3D object as a child of this 3D object, while maintaining the object's world transform. This method does not support scene graphs having non-uniformly-scaled nodes(s).
+将给定的 3D 对象添加为该 3D 对象的子对象,同时保持该对象的世界变换不变。该方法不支持含有非均匀缩放节点的场景图。
 
 **object**
 
-The 3D object to attach.
+要挂载的 3D 对象。
 
-##### Fires:
-
-*   [Object3D#event:added](Object3D.html#event:added)
-*   [Object3D#event:childadded](Object3D.html#event:childadded)
-
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .clear() : Object3D
 
-Removes all child objects.
+移除所有子对象。
 
-##### Fires:
-
-*   [Object3D#event:removed](Object3D.html#event:removed)
-*   [Object3D#event:childremoved](Object3D.html#event:childremoved)
-
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .clone( recursive : boolean ) : Object3D
 
-Returns a new 3D object with copied values from this instance.
+返回一个复制了该实例取值的新 3D 对象。
 
 **recursive**
 
-When set to `true`, descendants of the 3D object are also cloned.
+设为 `true` 时,同时克隆该 3D 对象的所有后代。
 
-Default is `true`.
+默认值为 `true`。
 
-**Returns:** A clone of this instance.
+**返回值:** 该实例的克隆。
 
 ### .copy( source : Object3D, recursive : boolean ) : Object3D
 
-Copies the values of the given 3D object to this instance.
+将给定 3D 对象的取值复制到该实例。
 
 **source**
 
-The 3D object to copy.
+要复制的 3D 对象。
 
 **recursive**
 
-When set to `true`, descendants of the 3D object are cloned.
+设为 `true` 时,同时克隆该 3D 对象的后代。
 
-Default is `true`.
+默认值为 `true`。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .getObjectById( id : number ) : Object3D | undefined
 
-Searches through the 3D object and its children, starting with the 3D object itself, and returns the first with a matching ID.
+从该 3D 对象自身开始,遍历它及其子级,返回第一个 ID 匹配的对象。
 
 **id**
 
-The id.
+ID。
 
-**Returns:** The found 3D object. Returns `undefined` if no 3D object has been found.
+**返回值:** 找到的 3D 对象。未找到时返回 `undefined`。
 
 ### .getObjectByName( name : string ) : Object3D | undefined
 
-Searches through the 3D object and its children, starting with the 3D object itself, and returns the first with a matching name.
+从该 3D 对象自身开始,遍历它及其子级,返回第一个名称匹配的对象。
 
 **name**
 
-The name.
+名称。
 
-**Returns:** The found 3D object. Returns `undefined` if no 3D object has been found.
+**返回值:** 找到的 3D 对象。未找到时返回 `undefined`。
 
 ### .getObjectByProperty( name : string, value : any ) : Object3D | undefined
 
-Searches through the 3D object and its children, starting with the 3D object itself, and returns the first with a matching property value.
+从该 3D 对象自身开始,遍历它及其子级,返回第一个指定属性值匹配的对象。
 
 **name**
 
-The name of the property.
+属性名。
 
 **value**
 
-The value.
+属性值。
 
-**Returns:** The found 3D object. Returns `undefined` if no 3D object has been found.
-
-### .getObjectsByProperty( name : string, value : any, result : Array.<Object3D> ) : Array.<Object3D>
-
-Searches through the 3D object and its children, starting with the 3D object itself, and returns all 3D objects with a matching property value.
-
-**name**
-
-The name of the property.
-
-**value**
-
-The value.
-
-**result**
-
-The method stores the result in this array.
-
-**Returns:** The found 3D objects.
+**返回值:** 找到的 3D 对象。未找到时返回 `undefined`。
 
 ### .getWorldDirection( target : Vector3 ) : Vector3
 
-Returns a vector representing the ("look") direction of the 3D object in world space.
+返回一个表示该 3D 对象在世界空间中("观察")方向的向量。
 
 **target**
 
-The target vector the result is stored to.
+存放结果的目标向量。
 
-**Returns:** The 3D object's direction in world space.
+**返回值:** 该 3D 对象在世界空间中的方向。
 
 ### .getWorldPosition( target : Vector3 ) : Vector3
 
-Returns a vector representing the position of the 3D object in world space.
+返回一个表示该 3D 对象在世界空间中位置的向量。
 
 **target**
 
-The target vector the result is stored to.
+存放结果的目标向量。
 
-**Returns:** The 3D object's position in world space.
+**返回值:** 该 3D 对象在世界空间中的位置。
 
 ### .getWorldQuaternion( target : Quaternion ) : Quaternion
 
-Returns a Quaternion representing the position of the 3D object in world space.
+返回一个表示该 3D 对象在世界空间中旋转的四元数。
 
 **target**
 
-The target Quaternion the result is stored to.
+存放结果的目标四元数。
 
-**Returns:** The 3D object's rotation in world space.
+**返回值:** 该 3D 对象在世界空间中的旋转。
 
 ### .getWorldScale( target : Vector3 ) : Vector3
 
-Returns a vector representing the scale of the 3D object in world space.
+返回一个表示该 3D 对象在世界空间中缩放的向量。
 
 **target**
 
-The target vector the result is stored to.
+存放结果的目标向量。
 
-**Returns:** The 3D object's scale in world space.
+**返回值:** 该 3D 对象在世界空间中的缩放。
 
 ### .localToWorld( vector : Vector3 ) : Vector3
 
-Converts the given vector from this 3D object's local space to world space.
+把给定向量从该 3D 对象的局部空间转换到世界空间。
 
 **vector**
 
-The vector to convert.
+要转换的向量。
 
-**Returns:** The converted vector.
+**返回值:** 转换后的向量。
 
 ### .lookAt( x : number | Vector3, y : number, z : number )
 
-Rotates the object to face a point in world space.
+旋转对象使其朝向世界空间中的一个点。
 
-This method does not support objects having non-uniformly-scaled parent(s).
+该方法不支持父级存在非均匀缩放的对象。
 
 **x**
 
-The x coordinate in world space. Alternatively, a vector representing a position in world space
+世界空间中的 x 坐标;也可以传入一个表示世界空间位置的向量。
 
 **y**
 
-The y coordinate in world space.
+世界空间中的 y 坐标。
 
 **z**
 
-The z coordinate in world space.
+世界空间中的 z 坐标。
 
-### .onAfterRender( renderer : Renderer | WebGLRenderer, object : Object3D, camera : Camera, geometry : BufferGeometry, material : Material, group : Object )
+### .raycast( raycaster : Raycaster, intersects : Array.<Object> ) (抽象方法)
 
-A callback that is executed immediately after a 3D object is rendered.
-
-**renderer**
-
-The renderer.
-
-**object**
-
-The 3D object.
-
-**camera**
-
-The camera that is used to render the scene.
-
-**geometry**
-
-The 3D object's geometry.
-
-**material**
-
-The 3D object's material.
-
-**group**
-
-The geometry group data.
-
-### .onAfterShadow( renderer : Renderer | WebGLRenderer, object : Object3D, camera : Camera, shadowCamera : Camera, geometry : BufferGeometry, depthMaterial : Material, group : Object )
-
-A callback that is executed immediately after a 3D object is rendered to a shadow map.
-
-**renderer**
-
-The renderer.
-
-**object**
-
-The 3D object.
-
-**camera**
-
-The camera that is used to render the scene.
-
-**shadowCamera**
-
-The shadow camera.
-
-**geometry**
-
-The 3D object's geometry.
-
-**depthMaterial**
-
-The depth material.
-
-**group**
-
-The geometry group data.
-
-### .onBeforeRender( renderer : Renderer | WebGLRenderer, object : Object3D, camera : Camera, geometry : BufferGeometry, material : Material, group : Object )
-
-A callback that is executed immediately before a 3D object is rendered.
-
-**renderer**
-
-The renderer.
-
-**object**
-
-The 3D object.
-
-**camera**
-
-The camera that is used to render the scene.
-
-**geometry**
-
-The 3D object's geometry.
-
-**material**
-
-The 3D object's material.
-
-**group**
-
-The geometry group data.
-
-### .onBeforeShadow( renderer : Renderer | WebGLRenderer, object : Object3D, camera : Camera, shadowCamera : Camera, geometry : BufferGeometry, depthMaterial : Material, group : Object )
-
-A callback that is executed immediately before a 3D object is rendered to a shadow map.
-
-**renderer**
-
-The renderer.
-
-**object**
-
-The 3D object.
-
-**camera**
-
-The camera that is used to render the scene.
-
-**shadowCamera**
-
-The shadow camera.
-
-**geometry**
-
-The 3D object's geometry.
-
-**depthMaterial**
-
-The depth material.
-
-**group**
-
-The geometry group data.
-
-### .raycast( raycaster : Raycaster, intersects : Array.<Object> ) (abstract)
-
-Abstract method to get intersections between a casted ray and this 3D object. Renderable 3D objects such as [Mesh](Mesh.html), [Line](Line.html) or [Points](Points.html) implement this method in order to use raycasting.
+抽象方法,用于求取投射光线与该 3D 对象之间的交点。可渲染的 3D 对象(如 [Mesh](Mesh.html)、[Line](Line.html)、[Points](Points.html))都会实现该方法以支持光线投射。
 
 **raycaster**
 
-The raycaster.
+光线投射器。
 
 **intersects**
 
-An array holding the result of the method.
+存放方法结果的数组。
 
 ### .remove( object : Object3D ) : Object3D
 
-Removes the given 3D object as child from this 3D object. An arbitrary number of objects may be removed.
+将给定的 3D 对象从该 3D 对象的子级中移除。可以移除任意数量的对象。
 
 **object**
 
-The 3D object to remove.
+要移除的 3D 对象。
 
-##### Fires:
-
-*   [Object3D#event:removed](Object3D.html#event:removed)
-*   [Object3D#event:childremoved](Object3D.html#event:childremoved)
-
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .removeFromParent() : Object3D
 
-Removes this 3D object from its current parent.
+将该 3D 对象从其当前父级中移除。
 
-##### Fires:
-
-*   [Object3D#event:removed](Object3D.html#event:removed)
-*   [Object3D#event:childremoved](Object3D.html#event:childremoved)
-
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .rotateOnAxis( axis : Vector3, angle : number ) : Object3D
 
-Rotates the 3D object along an axis in local space.
+使 3D 对象沿局部空间中的某个轴旋转。
 
 **axis**
 
-The (normalized) axis vector.
+(已归一化的)轴向量。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .rotateOnWorldAxis( axis : Vector3, angle : number ) : Object3D
 
-Rotates the 3D object along an axis in world space.
+使 3D 对象沿世界空间中的某个轴旋转。
 
 **axis**
 
-The (normalized) axis vector.
+(已归一化的)轴向量。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .rotateX( angle : number ) : Object3D
 
-Rotates the 3D object around its X axis in local space.
+使 3D 对象绕局部空间的 X 轴旋转。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .rotateY( angle : number ) : Object3D
 
-Rotates the 3D object around its Y axis in local space.
+使 3D 对象绕局部空间的 Y 轴旋转。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .rotateZ( angle : number ) : Object3D
 
-Rotates the 3D object around its Z axis in local space.
+使 3D 对象绕局部空间的 Z 轴旋转。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .setRotationFromAxisAngle( axis : Vector3, angle : number )
 
-Sets the given rotation represented as an axis/angle couple to the 3D object.
+以"轴-角"形式给定的旋转设置到该 3D 对象。
 
 **axis**
 
-The (normalized) axis vector.
+(已归一化的)轴向量。
 
 **angle**
 
-The angle in radians.
+角度,单位为弧度。
 
 ### .setRotationFromEuler( euler : Euler )
 
-Sets the given rotation represented as Euler angles to the 3D object.
+以欧拉角形式给定的旋转设置到该 3D 对象。
 
 **euler**
 
-The Euler angles.
-
-### .setRotationFromMatrix( m : Matrix4 )
-
-Sets the given rotation represented as rotation matrix to the 3D object.
-
-**m**
-
-Although a 4x4 matrix is expected, the upper 3x3 portion must be a pure rotation matrix (i.e, unscaled).
+欧拉角。
 
 ### .setRotationFromQuaternion( q : Quaternion )
 
-Sets the given rotation represented as a Quaternion to the 3D object.
+以四元数形式给定的旋转设置到该 3D 对象。
 
 **q**
 
-The Quaternion
-
-### .toJSON( meta : Object | string ) : Object
-
-Serializes the 3D object into JSON.
-
-**meta**
-
-An optional value holding meta information about the serialization.
-
-See:
-
-*   [ObjectLoader#parse](ObjectLoader.html#parse)
-
-**Returns:** A JSON object representing the serialized 3D object.
+四元数。
 
 ### .translateOnAxis( axis : Vector3, distance : number ) : Object3D
 
-Translate the 3D object by a distance along the given axis in local space.
+使 3D 对象沿局部空间中给定轴平移指定距离。
 
 **axis**
 
-The (normalized) axis vector.
+(已归一化的)轴向量。
 
 **distance**
 
-The distance in world units.
+距离,单位为世界坐标单位。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .translateX( distance : number ) : Object3D
 
-Translate the 3D object by a distance along its X-axis in local space.
+使 3D 对象沿局部空间的 X 轴平移指定距离。
 
 **distance**
 
-The distance in world units.
+距离,单位为世界坐标单位。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .translateY( distance : number ) : Object3D
 
-Translate the 3D object by a distance along its Y-axis in local space.
+使 3D 对象沿局部空间的 Y 轴平移指定距离。
 
 **distance**
 
-The distance in world units.
+距离,单位为世界坐标单位。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .translateZ( distance : number ) : Object3D
 
-Translate the 3D object by a distance along its Z-axis in local space.
+使 3D 对象沿局部空间的 Z 轴平移指定距离。
 
 **distance**
 
-The distance in world units.
+距离,单位为世界坐标单位。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .traverse( callback : function )
 
-Executes the callback on this 3D object and all descendants.
+对该 3D 对象及其所有后代执行回调。
 
-Note: Modifying the scene graph inside the callback is discouraged.
-
-**callback**
-
-A callback function that allows to process the current 3D object.
-
-### .traverseAncestors( callback : function )
-
-Like [Object3D#traverse](Object3D.html#traverse), but the callback will only be executed for all ancestors.
-
-Note: Modifying the scene graph inside the callback is discouraged.
+注意:不建议在回调内部修改场景图。
 
 **callback**
 
-A callback function that allows to process the current 3D object.
+用于处理当前 3D 对象的回调函数。
 
 ### .traverseVisible( callback : function )
 
-Like [Object3D#traverse](Object3D.html#traverse), but the callback will only be executed for visible 3D objects. Descendants of invisible 3D objects are not traversed.
+与 [Object3D#traverse](Object3D.html#traverse) 类似,但回调只对可见的 3D 对象执行。不可见 3D 对象的后代不会被遍历。
 
-Note: Modifying the scene graph inside the callback is discouraged.
+注意:不建议在回调内部修改场景图。
 
 **callback**
 
-A callback function that allows to process the current 3D object.
+用于处理当前 3D 对象的回调函数。
 
 ### .updateMatrix()
 
-Updates the transformation matrix in local space by computing it from the current position, rotation and scale values.
+根据当前的 position、rotation、scale 值重新计算并更新局部空间的变换矩阵。
 
 ### .updateMatrixWorld( force : boolean )
 
-Updates the transformation matrix in world space of this 3D objects and its descendants.
+更新该 3D 对象及其后代的局部与世界变换矩阵。
 
-To ensure correct results, this method also recomputes the 3D object's transformation matrix in local space. The computation of the local and world matrix can be controlled with the [Object3D#matrixAutoUpdate](Object3D.html#matrixAutoUpdate) and [Object3D#matrixWorldAutoUpdate](Object3D.html#matrixWorldAutoUpdate) flags which are both `true` by default. Set these flags to `false` if you need more control over the update matrix process.
+为确保结果正确,该方法还会重算该 3D 对象的局部变换矩阵。局部矩阵与世界矩阵的计算可通过 [Object3D#matrixAutoUpdate](Object3D.html#matrixAutoUpdate) 与 [Object3D#matrixWorldAutoUpdate](Object3D.html#matrixWorldAutoUpdate) 两个标志控制,二者默认均为 `true`。若需要对矩阵更新过程做更精细的控制,可将它们设为 `false`。
 
 **force**
 
-When set to `true`, a recomputation of world matrices is forced even when [Object3D#matrixWorldNeedsUpdate](Object3D.html#matrixWorldNeedsUpdate) is `false`.
+设为 `true` 时,即使 [Object3D#matrixWorldNeedsUpdate](Object3D.html#matrixWorldNeedsUpdate) 为 `false`,也强制重算世界矩阵。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .updateWorldMatrix( updateParents : boolean, updateChildren : boolean, force : boolean )
 
-An alternative version of [Object3D#updateMatrixWorld](Object3D.html#updateMatrixWorld) with more control over the update of ancestor and descendant nodes.
+[Object3D#updateMatrixWorld](Object3D.html#updateMatrixWorld) 的替代版本,可对祖先与后代节点的更新做更细粒度的控制。
 
 **updateParents**
 
-Whether ancestor nodes should be updated or not.
+是否更新祖先节点。
 
-Default is `false`.
+默认值为 `false`。
 
 **updateChildren**
 
-Whether descendant nodes should be updated or not.
+是否更新后代节点。
 
-Default is `false`.
+默认值为 `false`。
 
 **force**
 
-When set to `true`, a recomputation of world matrices is forced even when [Object3D#matrixWorldNeedsUpdate](Object3D.html#matrixWorldNeedsUpdate) is `false`.
+设为 `true` 时,即使 [Object3D#matrixWorldNeedsUpdate](Object3D.html#matrixWorldNeedsUpdate) 为 `false`,也强制重算世界矩阵。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .worldToLocal( vector : Vector3 ) : Vector3
 
-Converts the given vector from this 3D object's world space to local space.
+把给定向量从该 3D 对象的世界空间转换到局部空间。
 
 **vector**
 
-The vector to convert.
+要转换的向量。
 
-**Returns:** The converted vector.
+**返回值:** 转换后的向量。
 
-## Events
-
-### .added
-
-Fires when the object has been added to its parent object.
-
-##### Type:
-
-*   Object
-
-### .childadded
-
-Fires when a new child object has been added.
-
-##### Type:
-
-*   Object
-
-### .childremoved
-
-Fires when a child object has been removed.
-
-##### Type:
-
-*   Object
-
-### .removed
-
-Fires when the object has been removed from its parent object.
-
-##### Type:
-
-*   Object
-
-## Source
+## 源码
 
 [src/core/Object3D.js](https://github.com/mrdoob/three.js/blob/master/src/core/Object3D.js)

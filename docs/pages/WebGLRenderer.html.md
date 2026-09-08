@@ -1,71 +1,75 @@
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
+
 # WebGLRenderer
 
-This renderer uses WebGL 2 to display scenes.
+该渲染器使用 WebGL 2 来显示场景。
 
-WebGL 1 is not supported since `r163`.
+自 `r163` 起不再支持 WebGL 1。
 
-## Constructor
+> 📝 本页原文超过 10000 字符,以下仅翻译核心章节(概述、构造函数、常用属性与方法);其余方法与类型定义(如 `Capabilities`、`Info`、`Options`、`ShadowMap` 等)请参阅[英文原版](https://github.com/mrdoob/three.js/blob/master/docs/pages/WebGLRenderer.html.md)。
+
+## 构造函数
 
 ### new WebGLRenderer( parameters : WebGLRenderer~Options )
 
-Constructs a new WebGL renderer.
+创建一个新 WebGL 渲染器。
 
 **parameters**
 
-The configuration parameter.
+配置参数。
 
-## Properties
+## 属性
 
 ### .autoClear : boolean
 
-Whether the renderer should automatically clear its output before rendering a frame or not.
+渲染每一帧之前是否自动清空输出。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .autoClearColor : boolean
 
-If [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) set to `true`, whether the renderer should clear the color buffer or not.
+当 [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) 为 `true` 时,是否清空颜色缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .autoClearDepth : boolean
 
-If [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) set to `true`, whether the renderer should clear the depth buffer or not.
+当 [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) 为 `true` 时,是否清空深度缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .autoClearStencil : boolean
 
-If [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) set to `true`, whether the renderer should clear the stencil buffer or not.
+当 [WebGLRenderer#autoClear](WebGLRenderer.html#autoClear) 为 `true` 时,是否清空模板缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .capabilities : WebGLRenderer~Capabilities
 
-Holds details about the capabilities of the current rendering context.
+保存当前渲染上下文能力(capabilities)的详细信息。
 
 ### .clippingPlanes : Array.<Plane>
 
-User-defined clipping planes specified in world space. These planes apply globally. Points in space whose dot product with the plane is negative are cut away.
+用户自定义的裁剪平面,使用世界坐标。这些平面全局生效。空间中与平面点积为负的点会被裁掉。
 
-### .coordinateSystem : WebGLCoordinateSystem | WebGPUCoordinateSystem (readonly)
+### .coordinateSystem : WebGLCoordinateSystem | WebGPUCoordinateSystem (只读)
 
-Defines the coordinate system of the renderer.
+定义渲染器的坐标系。
 
-In `WebGLRenderer`, the value is always `WebGLCoordinateSystem`.
+在 `WebGLRenderer` 中,该值始终为 `WebGLCoordinateSystem`。
 
-Default is `WebGLCoordinateSystem`.
+默认值为 `WebGLCoordinateSystem`。
 
 ### .debug : Object
 
-A object with debug configuration settings.
+包含调试配置项的对象。
 
-*   `checkShaderErrors`: If it is `true`, defines whether material shader programs are checked for errors during compilation and linkage process. It may be useful to disable this check in production for performance gain. It is strongly recommended to keep these checks enabled during development. If the shader does not compile and link, it will not work and associated material will not render.
-*   `onShaderError(gl, program, glVertexShader,glFragmentShader)`: A callback function that can be used for custom error reporting. The callback receives the WebGL context, an instance of WebGLProgram as well two instances of WebGLShader representing the vertex and fragment shader. Assigning a custom function disables the default error reporting.
+*   `checkShaderErrors`: 若为 `true`,定义是否在编译与链接过程中检查材质着色器程序的错误。在生产环境中关闭该检查可以提升性能;但强烈建议在开发阶段保持开启。若着色器未能编译和链接,它将无法工作,对应材质也不会被渲染。
+*   `onShaderError(gl, program, glVertexShader,glFragmentShader)`: 可用于自定义错误上报的回调函数。回调会收到 WebGL 上下文、一个 WebGLProgram 实例,以及分别代表顶点着色器与片元着色器的两个 WebGLShader 实例。指定自定义函数会停用默认的错误上报。
 
 ### .domElement : HTMLCanvasElement | OffscreenCanvas
 
-A canvas where the renderer draws its output. This is automatically created by the renderer in the constructor (if not provided already); you just need to add it to your page like so:
+渲染器绘制输出的画布。若未提供,渲染器会在构造函数中自动创建;你只需把它加进页面:
 
 ```js
 document.body.appendChild( renderer.domElement );
@@ -73,926 +77,419 @@ document.body.appendChild( renderer.domElement );
 
 ### .extensions : Object
 
-Provides methods for retrieving and testing WebGL extensions.
+提供获取与检测 WebGL 扩展的方法。
 
-*   `get(extensionName:string)`: Used to check whether a WebGL extension is supported and return the extension object if available.
-*   `has(extensionName:string)`: returns `true` if the extension is supported.
+*   `get(extensionName:string)`: 用于检查某个 WebGL 扩展是否受支持,可用时返回扩展对象。
+*   `has(extensionName:string)`: 若扩展受支持则返回 `true`。
 
 ### .info : WebGLRenderer~Info
 
-Holds a series of statistical information about the GPU memory and the rendering process. Useful for debugging and monitoring.
+保存一系列关于 GPU 内存与渲染过程的统计信息,对调试与监控很有用。
 
-By default these data are reset at each render call but when having multiple render passes per frame (e.g. when using post processing) it can be preferred to reset with a custom pattern. First, set `autoReset` to `false`.
+默认情况下,这些数据在每次渲染调用时重置;但当每帧存在多次渲染通道时(例如使用后期处理),更适合按自定义节奏重置。首先,把 `autoReset` 设为 `false`:
 
 ```js
 renderer.info.autoReset = false;
 ```
 
-Call `reset()` whenever you have finished to render a single frame.
+然后在每帧渲染完成后调用 `reset()`:
 
 ```js
 renderer.info.reset();
 ```
 
-### .isWebGLRenderer : boolean (readonly)
+### .isWebGLRenderer : boolean (只读)
 
-This flag can be used for type testing.
+该标志可用于类型判断。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .localClippingEnabled : boolean
 
-Whether the renderer respects object-level clipping planes or not.
+渲染器是否支持对象级裁剪平面。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .outputColorSpace : SRGBColorSpace | LinearSRGBColorSpace
 
-Defines the output color space of the renderer.
+定义渲染器的输出色彩空间。
 
-Default is `SRGBColorSpace`.
+默认值为 `SRGBColorSpace`。
 
 ### .properties : Object
 
-Used to track properties of other objects like native WebGL objects.
+用于追踪其他对象(例如原生 WebGL 对象)的属性。
 
 ### .renderLists : Object
 
-Manages the render lists of the renderer.
+管理渲染器的渲染列表。
 
 ### .shadowMap : WebGLRenderer~ShadowMap
 
-Interface for managing shadows.
+管理阴影的接口。
 
 ### .sortObjects : boolean
 
-Whether the renderer should sort objects or not.
+渲染器是否对对象进行排序。
 
-Note: Sorting is used to attempt to properly render objects that have some degree of transparency. By definition, sorting objects may not work in all cases. Depending on the needs of application, it may be necessary to turn off sorting and use other methods to deal with transparency rendering e.g. manually determining each object's rendering order.
+注意:排序是为了尽量正确渲染含有一定透明度的对象。从原理上讲,排序并非在所有情况下都有效。根据应用的需要,也可能需要关闭排序并改用其他手段处理透明渲染,例如手动确定每个对象的渲染顺序。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .state : Object
 
-Interface for managing the WebGL state.
+管理 WebGL 状态的接口。
 
 ### .toneMapping : NoToneMapping | LinearToneMapping | ReinhardToneMapping | CineonToneMapping | ACESFilmicToneMapping | CustomToneMapping | AgXToneMapping | NeutralToneMapping
 
-The tone mapping technique of the renderer.
+渲染器的色调映射(tone mapping)技术。
 
-Default is `NoToneMapping`.
+默认值为 `NoToneMapping`。
 
 ### .toneMappingExposure : number
 
-Exposure level of tone mapping.
+色调映射的曝光级别。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .transmissionResolutionScale : number
 
-The normalized resolution scale for the transmission render target, measured in percentage of viewport dimensions. Lowering this value can result in significant performance improvements when using [MeshPhysicalMaterial#transmission](MeshPhysicalMaterial.html#transmission).
+透射(transmission)渲染目标的归一化分辨率缩放,以视口尺寸的百分比计。使用 [MeshPhysicalMaterial#transmission](MeshPhysicalMaterial.html#transmission) 时,调低该值可显著提升性能。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .xr : WebXRManager
 
-A reference to the XR manager.
+XR 管理器的引用。
 
-## Methods
+## 方法
 
 ### .clear( color : boolean, depth : boolean, stencil : boolean )
 
-Tells the renderer to clear its color, depth or stencil drawing buffer(s). This method initializes the buffers to the current clear color values.
+告诉渲染器清空其颜色、深度或模板绘图缓冲区。该方法会把缓冲区初始化为当前清除色。
 
 **color**
 
-Whether the color buffer should be cleared or not.
+是否清空颜色缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 **depth**
 
-Whether the depth buffer should be cleared or not.
+是否清空深度缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 **stencil**
 
-Whether the stencil buffer should be cleared or not.
+是否清空模板缓冲区。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .clearColor()
 
-Clears the color buffer. Equivalent to calling `renderer.clear( true, false, false )`.
+清空颜色缓冲区。等价于调用 `renderer.clear( true, false, false )`。
 
 ### .clearDepth()
 
-Clears the depth buffer. Equivalent to calling `renderer.clear( false, true, false )`.
+清空深度缓冲区。等价于调用 `renderer.clear( false, true, false )`。
 
 ### .clearStencil()
 
-Clears the stencil buffer. Equivalent to calling `renderer.clear( false, false, true )`.
+清空模板缓冲区。等价于调用 `renderer.clear( false, false, true )`。
 
 ### .compile( scene : Object3D, camera : Camera, targetScene : Scene ) : Set.<Material>
 
-Compiles all materials in the scene with the camera. This is useful to precompile shaders before the first rendering. If you want to add a 3D object to an existing scene, use the third optional parameter for applying the target scene.
+使用指定相机预编译场景中的所有材质。适合在首次渲染之前预编译着色器。若要向既有场景添加 3D 对象,可使用第三个可选参数指定目标场景。
 
-Note that the (target) scene's lighting and environment must be configured before calling this method.
+注意:调用该方法前必须先配置好(目标)场景的光照与环境。
 
 **scene**
 
-The scene or another type of 3D object to precompile.
+要预编译的场景或其他类型的 3D 对象。
 
 **camera**
 
-The camera.
+相机。
 
 **targetScene**
 
-The target scene.
+目标场景。
 
-Default is `null`.
+默认值为 `null`。
 
-**Returns:** The precompiled materials.
+**返回值:** 预编译完成的材质集合。
 
 ### .compileAsync( scene : Object3D, camera : Camera, targetScene : Scene ) : Promise (async)
 
-Asynchronous version of [WebGLRenderer#compile](WebGLRenderer.html#compile).
+[WebGLRenderer#compile](WebGLRenderer.html#compile) 的异步版本。
 
-This method makes use of the `KHR_parallel_shader_compile` WebGL extension. Hence, it is recommended to use this version of `compile()` whenever possible.
+该方法利用了 `KHR_parallel_shader_compile` WebGL 扩展,因此建议尽可能使用该版本的 `compile()`。
 
 **scene**
 
-The scene or another type of 3D object to precompile.
+要预编译的场景或其他类型的 3D 对象。
 
 **camera**
 
-The camera.
+相机。
 
 **targetScene**
 
-The target scene.
+目标场景。
 
-Default is `null`.
+默认值为 `null`。
 
-**Returns:** A Promise that resolves when the given scene can be rendered without unnecessary stalling due to shader compilation.
-
-### .copyFramebufferToTexture( texture : FramebufferTexture, position : Vector2, level : number )
-
-Copies pixels from the current bound framebuffer into the given texture.
-
-**texture**
-
-The texture.
-
-**position**
-
-The start position of the copy operation.
-
-Default is `null`.
-
-**level**
-
-The mip level. The default represents the base mip.
-
-Default is `0`.
-
-### .copyTextureToTexture( srcTexture : Texture, dstTexture : Texture, srcRegion : Box2 | Box3, dstPosition : Vector2 | Vector3, srcLevel : number, dstLevel : number )
-
-Copies data of the given source texture into a destination texture.
-
-When using render target textures as `srcTexture` and `dstTexture`, you must make sure both render targets are initialized [WebGLRenderer#initRenderTarget](WebGLRenderer.html#initRenderTarget).
-
-**srcTexture**
-
-The source texture.
-
-**dstTexture**
-
-The destination texture.
-
-**srcRegion**
-
-A bounding box which describes the source region. Can be two or three-dimensional.
-
-Default is `null`.
-
-**dstPosition**
-
-A vector that represents the origin of the destination region. Can be two or three-dimensional.
-
-Default is `null`.
-
-**srcLevel**
-
-The source mipmap level to copy.
-
-Default is `0`.
-
-**dstLevel**
-
-The destination mipmap level.
-
-Default is `0`.
+**返回值:** 一个 Promise,在给定场景可以渲染、且不会因着色器编译产生不必要卡顿时兑现。
 
 ### .dispose()
 
-Frees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.
-
-### .forceContextLoss()
-
-Simulates a loss of the WebGL context. This requires support for the `WEBGL_lose_context` extension.
-
-### .forceContextRestore()
-
-Simulates a restore of the WebGL context. This requires support for the `WEBGL_lose_context` extension.
-
-### .getActiveCubeFace() : number
-
-Returns the active cube face.
-
-**Returns:** The active cube face.
-
-### .getActiveMipmapLevel() : number
-
-Returns the active mipmap level.
-
-**Returns:** The active mipmap level.
-
-### .getClearAlpha() : number
-
-Returns the clear alpha. Ranges within `[0,1]`.
-
-**Returns:** The clear alpha.
+释放该实例分配的 GPU 相关资源。当应用中不再使用该实例时,应调用此方法。
 
 ### .getClearColor( target : Color ) : Color
 
-Returns the clear color.
+返回清除色。
 
 **target**
 
-The method writes the result in this target object.
+方法会把结果写入该目标对象。
 
-**Returns:** The clear color.
+**返回值:** 清除色。
 
 ### .getContext() : WebGL2RenderingContext
 
-Returns the rendering context.
+返回渲染上下文。
 
-**Returns:** The rendering context.
-
-### .getContextAttributes() : WebGLContextAttributes
-
-Returns the rendering context attributes.
-
-**Returns:** The rendering context attributes.
-
-### .getCurrentViewport( target : Vector2 ) : Vector2
-
-Returns the current viewport definition.
-
-**target**
-
-The method writes the result in this target object.
-
-**Returns:** The current viewport definition.
-
-### .getDrawingBufferSize( target : Vector2 ) : Vector2
-
-Returns the drawing buffer size in physical pixels. This method honors the pixel ratio.
-
-**target**
-
-The method writes the result in this target object.
-
-**Returns:** The drawing buffer size.
+**返回值:** 渲染上下文。
 
 ### .getPixelRatio() : number
 
-Returns the pixel ratio.
+返回像素比。
 
-**Returns:** The pixel ratio.
+**返回值:** 像素比。
 
 ### .getRenderTarget() : WebGLRenderTarget
 
-Returns the active render target.
+返回当前激活的渲染目标。
 
-**Returns:** The active render target. Returns `null` if no render target is currently set.
-
-### .getScissor( target : Vector4 ) : Vector4
-
-Returns the scissor region.
-
-**target**
-
-The method writes the result in this target object.
-
-**Returns:** The scissor region.
-
-### .getScissorTest() : boolean
-
-Returns `true` if the scissor test is enabled.
-
-**Returns:** Whether the scissor test is enabled or not.
+**返回值:** 当前激活的渲染目标。若当前未设置渲染目标,则返回 `null`。
 
 ### .getSize( target : Vector2 ) : Vector2
 
-Returns the renderer's size in logical pixels. This method does not honor the pixel ratio.
+以逻辑像素为单位返回渲染器尺寸。该方法不考虑像素比。
 
 **target**
 
-The method writes the result in this target object.
+方法会把结果写入该目标对象。
 
-**Returns:** The renderer's size in logical pixels.
+**返回值:** 渲染器的逻辑像素尺寸。
 
 ### .getViewport( target : Vector4 ) : Vector4
 
-Returns the viewport definition.
+返回视口(viewport)定义。
 
 **target**
 
-The method writes the result in this target object.
+方法会把结果写入该目标对象。
 
-**Returns:** The viewport definition.
-
-### .initRenderTarget( target : WebGLRenderTarget )
-
-Initializes the given WebGLRenderTarget memory. Useful for initializing a render target so data can be copied into it using [WebGLRenderer#copyTextureToTexture](WebGLRenderer.html#copyTextureToTexture) before it has been rendered to.
-
-**target**
-
-The render target.
+**返回值:** 视口定义。
 
 ### .initTexture( texture : Texture )
 
-Initializes the given texture. Useful for preloading a texture rather than waiting until first render (which can cause noticeable lags due to decode and GPU upload overhead).
+初始化给定纹理。用于预加载纹理,而不必等到首次渲染时才上传(首次上传会因解码与 GPU 上传开销造成明显卡顿)。
 
 **texture**
 
-The texture.
+纹理。
 
 ### .readRenderTargetPixels( renderTarget : WebGLRenderTarget, x : number, y : number, width : number, height : number, buffer : TypedArray, activeCubeFaceIndex : number, textureIndex : number )
 
-Reads the pixel data from the given render target into the given buffer.
+从给定渲染目标读取像素数据到给定缓冲区。
 
 **renderTarget**
 
-The render target to read from.
+要读取的渲染目标。
 
 **x**
 
-The `x` coordinate of the copy region's origin.
+复制区域起点的 `x` 坐标。
 
 **y**
 
-The `y` coordinate of the copy region's origin.
+复制区域起点的 `y` 坐标。
 
 **width**
 
-The width of the copy region.
+复制区域的宽度。
 
 **height**
 
-The height of the copy region.
+复制区域的高度。
 
 **buffer**
 
-The result buffer.
+结果缓冲区。
 
 **activeCubeFaceIndex**
 
-The active cube face index.
+激活的立方体面索引。
 
 **textureIndex**
 
-The texture index of an MRT render target.
+MRT 渲染目标的纹理索引。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .readRenderTargetPixelsAsync( renderTarget : WebGLRenderTarget, x : number, y : number, width : number, height : number, buffer : TypedArray, activeCubeFaceIndex : number, textureIndex : number ) : Promise.<TypedArray> (async)
 
-Asynchronous, non-blocking version of [WebGLRenderer#readRenderTargetPixels](WebGLRenderer.html#readRenderTargetPixels).
+[WebGLRenderer#readRenderTargetPixels](WebGLRenderer.html#readRenderTargetPixels) 的异步、非阻塞版本。
 
-It is recommended to use this version of `readRenderTargetPixels()` whenever possible.
+建议尽可能使用该版本的 `readRenderTargetPixels()`。
 
 **renderTarget**
 
-The render target to read from.
+要读取的渲染目标。
 
 **x**
 
-The `x` coordinate of the copy region's origin.
+复制区域起点的 `x` 坐标。
 
 **y**
 
-The `y` coordinate of the copy region's origin.
+复制区域起点的 `y` 坐标。
 
 **width**
 
-The width of the copy region.
+复制区域的宽度。
 
 **height**
 
-The height of the copy region.
+复制区域的高度。
 
 **buffer**
 
-The result buffer.
+结果缓冲区。
 
 **activeCubeFaceIndex**
 
-The active cube face index.
+激活的立方体面索引。
 
 **textureIndex**
 
-The texture index of an MRT render target.
+MRT 渲染目标的纹理索引。
 
-Default is `0`.
+默认值为 `0`。
 
-**Returns:** A Promise that resolves when the read has been finished. The resolve provides the read data as a typed array.
+**返回值:** 一个 Promise,在读取完成时兑现,兑现值为以类型化数组表示的读取数据。
 
 ### .render( scene : Object3D, camera : Camera )
 
-Renders the given scene (or other type of 3D object) using the given camera.
+使用给定相机渲染给定场景(或其他类型的 3D 对象)。
 
-The render is done to a previously specified render target set by calling [WebGLRenderer#setRenderTarget](WebGLRenderer.html#setRenderTarget) or to the canvas as usual.
+渲染输出到此前通过 [WebGLRenderer#setRenderTarget](WebGLRenderer.html#setRenderTarget) 指定的渲染目标,或照常输出到画布。
 
-By default render buffers are cleared before rendering but you can prevent this by setting the property `autoClear` to `false`. If you want to prevent only certain buffers being cleared you can `autoClearColor`, `autoClearDepth` or `autoClearStencil` to `false`. To force a clear, use [WebGLRenderer#clear](WebGLRenderer.html#clear).
+默认情况下,渲染缓冲区会在渲染前被清空;将属性 `autoClear` 设为 `false` 可阻止该行为。若只想阻止清空某些缓冲区,可把 `autoClearColor`、`autoClearDepth` 或 `autoClearStencil` 设为 `false`。需要强制清空时,使用 [WebGLRenderer#clear](WebGLRenderer.html#clear)。
 
 **scene**
 
-The scene to render.
+要渲染的场景。
 
 **camera**
 
-The camera.
+相机。
 
 ### .resetState()
 
-Can be used to reset the internal WebGL state. This method is mostly relevant for applications which share a single WebGL context across multiple WebGL libraries.
+可用于重置内部 WebGL 状态。该方法主要用于在多个 WebGL 库之间共享同一个 WebGL 上下文的应用。
 
 ### .setAnimationLoop( callback : onAnimationCallback )
 
-Applications are advised to always define the animation loop with this method and not manually with `requestAnimationFrame()` for best compatibility.
+建议应用始终使用该方法定义动画循环,而不是手动使用 `requestAnimationFrame()`,以获得最佳兼容性。
 
 **callback**
 
-The application's animation loop.
-
-### .setClearAlpha( alpha : number )
-
-Sets the clear alpha.
-
-**alpha**
-
-The clear alpha.
+应用的动画循环。
 
 ### .setClearColor( color : Color, alpha : number )
 
-Sets the clear color and alpha.
+设置清除色与透明度。
 
 **color**
 
-The clear color.
+清除色。
 
 **alpha**
 
-The clear alpha.
+清除透明度。
 
-Default is `1`.
-
-### .setDrawingBufferSize( width : number, height : number, pixelRatio : number )
-
-This method allows to define the drawing buffer size by specifying width, height and pixel ratio all at once. The size of the drawing buffer is computed with this formula:
-
-```js
-size.x = width * pixelRatio;
-size.y = height * pixelRatio;
-```
-
-**width**
-
-The width in logical pixels.
-
-**height**
-
-The height in logical pixels.
-
-**pixelRatio**
-
-The pixel ratio.
-
-### .setEffects( effects : Array )
-
-Sets the post-processing effects to be applied after rendering.
-
-**effects**
-
-An array of post-processing effects.
-
-### .setNodesHandler( nodesHandler : WebGLNodesHandler )
-
-Sets a compatibility node builder for rendering node materials with WebGLRenderer. This enables using TSL (Three.js Shading Language) node materials to prepare for migration to WebGPURenderer.
-
-**nodesHandler**
-
-The node builder instance.
-
-### .setOpaqueSort( method : function )
-
-Sets a custom opaque sort function for the render lists. Pass `null` to use the default `painterSortStable` function.
-
-**method**
-
-The opaque sort function.
+默认值为 `1`。
 
 ### .setPixelRatio( value : number )
 
-Sets the given pixel ratio and resizes the canvas if necessary.
+设置像素比,并在必要时调整画布尺寸。
 
 **value**
 
-The pixel ratio.
+像素比。
 
 ### .setRenderTarget( renderTarget : WebGLRenderTarget, activeCubeFace : number, activeMipmapLevel : number )
 
-Sets the active rendertarget.
+设置激活的渲染目标。
 
 **renderTarget**
 
-The render target to set. When `null` is given, the canvas is set as the active render target instead.
+要设置的渲染目标。传入 `null` 时,画布会成为激活的渲染目标。
 
 **activeCubeFace**
 
-The active cube face when using a cube render target. Indicates the z layer to render in to when using 3D or array render targets.
+使用立方体渲染目标时的激活立方体面;使用 3D 或数组渲染目标时,指示要渲染写入的 z 层。
 
-Default is `0`.
+默认值为 `0`。
 
 **activeMipmapLevel**
 
-The active mipmap level.
+激活的 mipmap 级别。
 
-Default is `0`.
-
-### .setScissor( x : number | Vector4, y : number, width : number, height : number )
-
-Sets the scissor region to render from `(x, y)` to `(x + width, y + height)`.
-
-**x**
-
-The horizontal coordinate for the lower left corner of the scissor region origin in logical pixel unit. Or alternatively a four-component vector specifying all the parameters of the scissor region.
-
-**y**
-
-The vertical coordinate for the lower left corner of the scissor region origin in logical pixel unit.
-
-**width**
-
-The width of the scissor region in logical pixel unit.
-
-**height**
-
-The height of the scissor region in logical pixel unit.
-
-### .setScissorTest( boolean : boolean )
-
-Enable or disable the scissor test. When this is enabled, only the pixels within the defined scissor area will be affected by further renderer actions.
-
-**boolean**
-
-Whether the scissor test is enabled or not.
+默认值为 `0`。
 
 ### .setSize( width : number, height : number, updateStyle : boolean )
 
-Resizes the output canvas to (width, height) with device pixel ratio taken into account, and also sets the viewport to fit that size, starting in (0, 0). Setting `updateStyle` to false prevents any style changes to the output canvas.
+把输出画布调整为 (width, height),同时考虑设备像素比,并将视口设为匹配该尺寸、起点为 (0, 0)。把 `updateStyle` 设为 `false` 可避免对输出画布做任何样式修改。
 
 **width**
 
-The width in logical pixels.
+逻辑像素宽度。
 
 **height**
 
-The height in logical pixels.
+逻辑像素高度。
 
 **updateStyle**
 
-Whether to update the `style` attribute of the canvas or not.
+是否更新画布的 `style` 属性。
 
-Default is `true`.
-
-### .setTransparentSort( method : function )
-
-Sets a custom transparent sort function for the render lists. Pass `null` to use the default `reversePainterSortStable` function.
-
-**method**
-
-The opaque sort function.
+默认值为 `true`。
 
 ### .setViewport( x : number | Vector4, y : number, width : number, height : number )
 
-Sets the viewport to render from `(x, y)` to `(x + width, y + height)`.
+设置视口,渲染范围从 `(x, y)` 到 `(x + width, y + height)`。
 
 **x**
 
-The horizontal coordinate for the lower left corner of the viewport origin in logical pixel unit. Or alternatively a four-component vector specifying all the parameters of the viewport.
+视口起点左下角的水平坐标,单位为逻辑像素;也可以传入一个四分量向量,一次性给出视口的全部参数。
 
 **y**
 
-The vertical coordinate for the lower left corner of the viewport origin in logical pixel unit.
+视口起点左下角的垂直坐标,单位为逻辑像素。
 
 **width**
 
-The width of the viewport in logical pixel unit.
+视口宽度,单位为逻辑像素。
 
 **height**
 
-The height of the viewport in logical pixel unit.
+视口高度,单位为逻辑像素。
 
-## Type Definitions
-
-### .Capabilities
-
-WebGLRenderer Capabilities.
-
-**getMaxAnisotropy**  
-function
-
-Returns the maximum available anisotropy.
-
-**getMaxPrecision**  
-function
-
-Returns the maximum available precision for vertex and fragment shaders.
-
-**logarithmicDepthBuffer**  
-boolean
-
-`true` if `logarithmicDepthBuffer` was set to `true` in the constructor.
-
-**maxAttributes**  
-number
-
-The number of shader attributes that can be used by the vertex shader.
-
-**maxCubemapSize**  
-number
-
-Maximum height \* width of cube map textures that a shader can use.
-
-**maxFragmentUniforms**  
-number
-
-The number of uniforms that can be used by a fragment shader.
-
-**maxSamples**  
-number
-
-Maximum number of samples in context of Multisample anti-aliasing (MSAA).
-
-**maxTextures**  
-number
-
-The maximum number of textures that can be used by a shader.
-
-**maxTextureSize**  
-number
-
-Maximum height \* width of a texture that a shader use.
-
-**maxVaryings**  
-number
-
-The number of varying vectors that can used by shaders.
-
-**maxVertexTextures**  
-number
-
-The number of textures that can be used in a vertex shader.
-
-**maxVertexUniforms**  
-number
-
-The maximum number of uniforms that can be used in a vertex shader.
-
-**precision**  
-string
-
-The shader precision currently being used by the renderer.
-
-**reversedDepthBuffer**  
-boolean
-
-`true` if `reversedDepthBuffer` was set to `true` in the constructor and the rendering context supports `EXT_clip_control`.
-
-### .Info
-
-WebGLRenderer Info
-
-**autoReset**  
-boolean
-
-Whether to automatically reset the info by the renderer or not.
-
-Default is `true`.
-
-**memory**  
-[WebGLRenderer~InfoMemory](WebGLRenderer.html#~InfoMemory)
-
-Information about allocated objects.
-
-**render**  
-[WebGLRenderer~InfoRender](WebGLRenderer.html#~InfoRender)
-
-Information about rendered objects.
-
-**programs**  
-Array.<WebGLProgram>
-
-An array `WebGLProgram`s used for rendering.
-
-**reset**  
-function
-
-Resets the info object for the next frame.
-
-### .InfoMemory
-
-WebGLRenderer Info Memory
-
-**geometries**  
-number
-
-The number of active geometries.
-
-**textures**  
-number
-
-The number of active textures.
-
-### .InfoRender
-
-WebGLRenderer Info Render
-
-**frame**  
-number
-
-The frame ID.
-
-**calls**  
-number
-
-The number of draw calls per frame.
-
-**triangles**  
-number
-
-The number of rendered triangles primitives per frame.
-
-**points**  
-number
-
-The number of rendered points primitives per frame.
-
-**lines**  
-number
-
-The number of rendered lines primitives per frame.
-
-### .Options
-
-WebGLRenderer options.
-
-**canvas**  
-HTMLCanvasElement | OffscreenCanvas
-
-A canvas element where the renderer draws its output. If not passed in here, a new canvas element will be created by the renderer.
-
-Default is `null`.
-
-**context**  
-WebGL2RenderingContext
-
-Can be used to attach an existing rendering context to this renderer.
-
-Default is `null`.
-
-**precision**  
-'highp' | 'mediump' | 'lowp'
-
-The default shader precision. Uses `highp` if supported by the device.
-
-Default is `'highp'`.
-
-**alpha**  
-boolean
-
-Controls the default clear alpha value. When set to`true`, the value is `0`. Otherwise it's `1`.
-
-Default is `false`.
-
-**premultipliedAlpha**  
-boolean
-
-Whether the renderer will assume colors have premultiplied alpha or not.
-
-Default is `true`.
-
-**antialias**  
-boolean
-
-Whether to use the default MSAA or not.
-
-Default is `false`.
-
-**stencil**  
-boolean
-
-Whether the drawing buffer has a stencil buffer of at least 8 bits or not.
-
-Default is `false`.
-
-**preserveDrawingBuffer**  
-boolean
-
-Whether to preserve the buffer until manually cleared or overwritten.
-
-Default is `false`.
-
-**powerPreference**  
-'default' | 'low-power' | 'high-performance'
-
-Provides a hint to the user agent indicating what configuration of GPU is suitable for this WebGL context.
-
-Default is `'default'`.
-
-**failIfMajorPerformanceCaveat**  
-boolean
-
-Whether the renderer creation will fail upon low performance is detected.
-
-Default is `false`.
-
-**depth**  
-boolean
-
-Whether the drawing buffer has a depth buffer of at least 16 bits.
-
-Default is `true`.
-
-**logarithmicDepthBuffer**  
-boolean
-
-Whether to use a logarithmic depth buffer. It may be necessary to use this if dealing with huge differences in scale in a single scene. Note that this setting uses `gl_FragDepth` if available which disables the Early Fragment Test optimization and can cause a decrease in performance.
-
-Default is `false`.
-
-**reversedDepthBuffer**  
-boolean
-
-Whether to use a reverse depth buffer. Requires the `EXT_clip_control` extension. This is a more faster and accurate version than logarithmic depth buffer.
-
-Default is `false`.
-
-**outputBufferType**  
-number
-
-Defines the type of the output buffer. Use `HalfFloatType` for HDR rendering with tone mapping and post-processing support.
-
-Default is `UnsignedByteType`.
-
-### .ShadowMap
-
-WebGLRenderer Shadow Map.
-
-**enabled**  
-boolean
-
-If set to `true`, use shadow maps in the scene.
-
-Default is `false`.
-
-**autoUpdate**  
-boolean
-
-Enables automatic updates to the shadows in the scene. If you do not require dynamic lighting / shadows, you may set this to `false`.
-
-Default is `true`.
-
-**needsUpdate**  
-boolean
-
-When set to `true`, shadow maps in the scene will be updated in the next `render` call.
-
-Default is `false`.
-
-**type**  
-[BasicShadowMap](global.html#BasicShadowMap) | [PCFShadowMap](global.html#PCFShadowMap) | [VSMShadowMap](global.html#VSMShadowMap)
-
-Defines the shadow map type.
-
-Default is `PCFShadowMap`.
-
-## Source
+## 源码
 
 [src/renderers/WebGLRenderer.js](https://github.com/mrdoob/three.js/blob/master/src/renderers/WebGLRenderer.js)
