@@ -1,459 +1,307 @@
-*Inheritance: EventDispatcher →*
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-# Material
+*继承关系:EventDispatcher →*
 
-Abstract base class for materials.
+# Material(材质)
 
-Materials define the appearance of renderable 3D objects.
+材质的抽象基类。
 
-## Constructor
+材质定义了可渲染 3D 对象的外观。
 
-### new Material() (abstract)
+> 📝 本页原文超过 10000 字符,以下翻译核心章节(概述、构造函数、常用属性与常用方法);模板缓冲(stencil)系列属性、`Events` 事件小节及 `customProgramCacheKey()`、`fromJSON()` 等次要方法请参阅[英文原版](https://github.com/mrdoob/three.js/blob/master/docs/pages/Material.html.md)。
 
-Constructs a new material.
+## 构造函数
 
-## Properties
+### new Material() (抽象)
+
+创建一个新材质。
+
+## 属性
 
 ### .allowOverride : boolean
 
-Whether it's possible to override the material with [Scene#overrideMaterial](Scene.html#overrideMaterial) or not.
+是否允许使用 [Scene#overrideMaterial](Scene.html#overrideMaterial) 覆盖该材质。
 
-Default is `true`.
+默认值为 `true`。
 
-### .alphaHash : boolean
+### .alphaTest : number (只读)
 
-Enables alpha hashed transparency, an alternative to [Material#transparent](Material.html#transparent) or [Material#alphaTest](Material.html#alphaTest). The material will not be rendered if opacity is lower than a random threshold. Randomization introduces some grain or noise, but approximates alpha blending without the associated problems of sorting. Using TAA can reduce the resulting noise.
+设置执行 alpha 测试时使用的 alpha 阈值。不透明度低于该值的像素对应的材质将不会被渲染。
 
-Default is `false`.
-
-### .alphaTest : number (readonly)
-
-Sets the alpha value to be used when running an alpha test. The material will not be rendered if the opacity is lower than this value.
-
-Default is `0`.
-
-### .alphaToCoverage : boolean
-
-Whether alpha to coverage should be enabled or not. Can only be used with MSAA-enabled contexts (meaning when the renderer was created with _antialias_ parameter set to `true`). Enabling this will smooth aliasing on clip plane edges and alphaTest-clipped edges.
-
-Default is `false`.
-
-### .blendAlpha : number
-
-Represents the alpha value of the constant blend color.
-
-This property has only an effect when using custom blending with `ConstantAlpha` or `OneMinusConstantAlpha`.
-
-Default is `0`.
-
-### .blendColor : Color
-
-Represents the RGB values of the constant blend color.
-
-This property has only an effect when using custom blending with `ConstantColor` or `OneMinusConstantColor`.
-
-Default is `(0,0,0)`.
-
-### .blendDst : ZeroFactor | OneFactor | SrcColorFactor | OneMinusSrcColorFactor | SrcAlphaFactor | OneMinusSrcAlphaFactor | DstAlphaFactor | OneMinusDstAlphaFactor | DstColorFactor | OneMinusDstColorFactor | SrcAlphaSaturateFactor | ConstantColorFactor | OneMinusConstantColorFactor | ConstantAlphaFactor | OneMinusConstantAlphaFactor
-
-Defines the blending destination factor.
-
-Default is `OneMinusSrcAlphaFactor`.
-
-### .blendDstAlpha : ZeroFactor | OneFactor | SrcColorFactor | OneMinusSrcColorFactor | SrcAlphaFactor | OneMinusSrcAlphaFactor | DstAlphaFactor | OneMinusDstAlphaFactor | DstColorFactor | OneMinusDstColorFactor | SrcAlphaSaturateFactor | ConstantColorFactor | OneMinusConstantColorFactor | ConstantAlphaFactor | OneMinusConstantAlphaFactor
-
-Defines the blending destination alpha factor.
-
-Default is `null`.
-
-### .blendEquation : AddEquation | SubtractEquation | ReverseSubtractEquation | MinEquation | MaxEquation
-
-Defines the blending equation.
-
-Default is `AddEquation`.
-
-### .blendEquationAlpha : AddEquation | SubtractEquation | ReverseSubtractEquation | MinEquation | MaxEquation
-
-Defines the blending equation of the alpha channel.
-
-Default is `null`.
-
-### .blendSrc : ZeroFactor | OneFactor | SrcColorFactor | OneMinusSrcColorFactor | SrcAlphaFactor | OneMinusSrcAlphaFactor | DstAlphaFactor | OneMinusDstAlphaFactor | DstColorFactor | OneMinusDstColorFactor | SrcAlphaSaturateFactor | ConstantColorFactor | OneMinusConstantColorFactor | ConstantAlphaFactor | OneMinusConstantAlphaFactor
-
-Defines the blending source factor.
-
-Default is `SrcAlphaFactor`.
-
-### .blendSrcAlpha : ZeroFactor | OneFactor | SrcColorFactor | OneMinusSrcColorFactor | SrcAlphaFactor | OneMinusSrcAlphaFactor | DstAlphaFactor | OneMinusDstAlphaFactor | DstColorFactor | OneMinusDstColorFactor | SrcAlphaSaturateFactor | ConstantColorFactor | OneMinusConstantColorFactor | ConstantAlphaFactor | OneMinusConstantAlphaFactor
-
-Defines the blending source alpha factor.
-
-Default is `null`.
+默认值为 `0`。
 
 ### .blending : NoBlending | NormalBlending | AdditiveBlending | SubtractiveBlending | MultiplyBlending | CustomBlending
 
-Defines the blending type of the material.
+定义材质的混合(blending)类型。
 
-It must be set to `CustomBlending` if custom blending properties like [Material#blendSrc](Material.html#blendSrc), [Material#blendDst](Material.html#blendDst) or [Material#blendEquation](Material.html#blendEquation) should have any effect.
+若希望 [Material#blendSrc](Material.html#blendSrc)、[Material#blendDst](Material.html#blendDst)、[Material#blendEquation](Material.html#blendEquation) 等自定义混合属性生效,必须将其设为 `CustomBlending`。
 
-Default is `NormalBlending`.
+默认值为 `NormalBlending`。
+
+### .blendDst : 混合因子枚举(见英文原版)
+
+定义混合目标因子。
+
+默认值为 `OneMinusSrcAlphaFactor`。
+
+### .blendEquation : AddEquation | SubtractEquation | ReverseSubtractEquation | MinEquation | MaxEquation
+
+定义混合方程。
+
+默认值为 `AddEquation`。
+
+### .blendSrc : 混合因子枚举(见英文原版)
+
+定义混合源因子。
+
+默认值为 `SrcAlphaFactor`。
 
 ### .clipIntersection : boolean
 
-Changes the behavior of clipping planes so that only their intersection is clipped, rather than their union.
+改变裁剪平面的行为:只裁剪各平面的交集,而非并集。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .clipShadows : boolean
 
-Defines whether to clip shadows according to the clipping planes specified on this material.
+定义是否按该材质上指定的裁剪平面来裁剪阴影。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .clippingPlanes : Array.<Plane>
 
-User-defined clipping planes specified as THREE.Plane objects in world space. These planes apply to the objects this material is attached to. Points in space whose signed distance to the plane is negative are clipped (not rendered). This requires [WebGLRenderer#localClippingEnabled](WebGLRenderer.html#localClippingEnabled) to be `true`.
+用户自定义裁剪平面,以 THREE.Plane 对象、世界坐标指定。这些平面作用于挂载该材质的对象。空间中到平面的有符号距离为负的点会被裁掉(不渲染)。使用该功能需要 [WebGLRenderer#localClippingEnabled](WebGLRenderer.html#localClippingEnabled) 为 `true`。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .colorWrite : boolean
 
-Whether to render the material's color.
+是否渲染该材质的颜色。
 
-This can be used in conjunction with Object3D#renderOder to create invisible objects that occlude other objects.
+可与 Object3D#renderOrder 结合使用,创建能够遮挡其他对象的不可见物体。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .depthFunc : NeverDepth | AlwaysDepth | LessDepth | LessEqualDepth | EqualDepth | GreaterEqualDepth | GreaterDepth | NotEqualDepth
 
-Defines the depth function.
+定义深度测试函数。
 
-Default is `LessEqualDepth`.
+默认值为 `LessEqualDepth`。
 
 ### .depthTest : boolean
 
-Whether to have depth test enabled when rendering this material. When the depth test is disabled, the depth write will also be implicitly disabled.
+渲染该材质时是否启用深度测试。深度测试被禁用时,深度写入也会被一并隐式禁用。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .depthWrite : boolean
 
-Whether rendering this material has any effect on the depth buffer.
+渲染该材质时是否写入深度缓冲区。
 
-When drawing 2D overlays it can be useful to disable the depth writing in order to layer several things together without creating z-index artifacts.
+绘制 2D 叠加层时,关闭深度写入往往很有用,可以把多层内容叠在一起而不产生 z-index 伪影。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .dithering : boolean
 
-Whether to apply dithering to the color to remove the appearance of banding.
+是否对颜色应用抖动(dithering)以消除色带(banding)现象。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .forceSinglePass : boolean
 
-Whether double-sided, transparent objects should be rendered with a single pass or not.
+双面透明对象是否应以单通道(pass)渲染。
 
-The engine renders double-sided, transparent objects with two draw calls (back faces first, then front faces) to mitigate transparency artifacts. There are scenarios however where this approach produces no quality gains but still doubles draw calls e.g. when rendering flat vegetation like grass sprites. In these cases, set the `forceSinglePass` flag to `true` to disable the two pass rendering to avoid performance issues.
+引擎默认用两次绘制调用渲染双面透明对象(先背面后正面)以缓解透明伪影。但在某些场景下这种做法不会带来质量提升,反而让绘制调用翻倍,例如渲染草丛精灵之类的平面植被。此时可将 `forceSinglePass` 设为 `true`,禁用双通道渲染以避免性能问题。
 
-Default is `false`.
+默认值为 `false`。
 
-### .id : number (readonly)
+### .id : number (只读)
 
-The ID of the material.
+该材质的 ID。
 
-### .isMaterial : boolean (readonly)
+### .isMaterial : boolean (只读)
 
-This flag can be used for type testing.
+该标志可用于类型判断。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .name : string
 
-The name of the material.
+该材质的名称。
 
 ### .needsUpdate : boolean
 
-Setting this property to `true` indicates the engine the material needs to be recompiled.
+将该属性设为 `true` 表示材质需要重新编译。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .opacity : number
 
-Defines how transparent the material is. A value of `0.0` indicates fully transparent, `1.0` is fully opaque.
+定义材质的透明程度。`0.0` 表示完全透明,`1.0` 表示完全不透明。
 
-If the [Material#transparent](Material.html#transparent) is not set to `true`, the material will remain fully opaque and this value will only affect its color.
+若 [Material#transparent](Material.html#transparent) 未设为 `true`,材质会保持完全不透明,该值只影响其颜色。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .polygonOffset : boolean
 
-Whether to use polygon offset or not. When enabled, each fragment's depth value will be offset after it is interpolated from the depth values of the appropriate vertices. The offset is added before the depth test is performed and before the value is written into the depth buffer.
+是否使用多边形偏移(polygon offset)。启用后,每个片元的深度值会在从相应顶点深度插值之后被偏移。该偏移在执行深度测试之前、写入深度缓冲区之前生效。
 
-Can be useful for rendering hidden-line images, for applying decals to surfaces, and for rendering solids with highlighted edges.
+可用于渲染隐藏线图像、在表面贴花(decal)、渲染带高亮边的实体等场景。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .polygonOffsetFactor : number
 
-Specifies a scale factor that is used to create a variable depth offset for each polygon.
+指定一个缩放因子,用于为每个多边形生成可变的深度偏移。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .polygonOffsetUnits : number
 
-Is multiplied by an implementation-specific value to create a constant depth offset.
+乘以一个实现相关的值,生成恒定的深度偏移。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .precision : 'highp' | 'mediump' | 'lowp'
 
-Override the renderer's default precision for this material.
+为该材质覆盖渲染器的默认着色器精度。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .premultipliedAlpha : boolean
 
-Whether to premultiply the alpha (transparency) value.
+是否预乘 alpha(透明度)值。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .shadowSide : FrontSide | BackSide | DoubleSide
 
-Defines which side of faces cast shadows. If `null`, the side casting shadows is determined as follows:
+定义面的哪一侧投射阴影。若为 `null`,投射阴影的一侧按如下规则确定:
 
-*   When [Material#side](Material.html#side) is set to `FrontSide`, the back side cast shadows.
-*   When [Material#side](Material.html#side) is set to `BackSide`, the front side cast shadows.
-*   When [Material#side](Material.html#side) is set to `DoubleSide`, both sides cast shadows.
+*   当 [Material#side](Material.html#side) 为 `FrontSide` 时,由背面投射阴影。
+*   当 [Material#side](Material.html#side) 为 `BackSide` 时,由正面投射阴影。
+*   当 [Material#side](Material.html#side) 为 `DoubleSide` 时,两侧都投射阴影。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .side : FrontSide | BackSide | DoubleSide
 
-Defines which side of faces will be rendered - front, back or both.
+定义渲染面的哪一侧——正面、背面或两者。
 
-Default is `FrontSide`.
-
-### .stencilFail : ZeroStencilOp | KeepStencilOp | ReplaceStencilOp | IncrementStencilOp | DecrementStencilOp | IncrementWrapStencilOp | DecrementWrapStencilOp | InvertStencilOp
-
-Which stencil operation to perform when the comparison function returns `false`.
-
-Default is `KeepStencilOp`.
-
-### .stencilFunc : NeverStencilFunc | LessStencilFunc | EqualStencilFunc | LessEqualStencilFunc | GreaterStencilFunc | NotEqualStencilFunc | GreaterEqualStencilFunc | AlwaysStencilFunc
-
-The stencil comparison function to use.
-
-Default is `AlwaysStencilFunc`.
-
-### .stencilFuncMask : number
-
-The bit mask to use when comparing against the stencil buffer.
-
-Default is `0xff`.
-
-### .stencilRef : number
-
-The value to use when performing stencil comparisons or stencil operations.
-
-Default is `0`.
-
-### .stencilWrite : boolean
-
-Whether stencil operations are performed against the stencil buffer. In order to perform writes or comparisons against the stencil buffer this value must be `true`.
-
-Default is `false`.
-
-### .stencilWriteMask : number
-
-The bit mask to use when writing to the stencil buffer.
-
-Default is `0xff`.
-
-### .stencilZFail : ZeroStencilOp | KeepStencilOp | ReplaceStencilOp | IncrementStencilOp | DecrementStencilOp | IncrementWrapStencilOp | DecrementWrapStencilOp | InvertStencilOp
-
-Which stencil operation to perform when the comparison function returns `true` but the depth test fails.
-
-Default is `KeepStencilOp`.
-
-### .stencilZPass : ZeroStencilOp | KeepStencilOp | ReplaceStencilOp | IncrementStencilOp | DecrementStencilOp | IncrementWrapStencilOp | DecrementWrapStencilOp | InvertStencilOp
-
-Which stencil operation to perform when the comparison function returns `true` and the depth test passes.
-
-Default is `KeepStencilOp`.
+默认值为 `FrontSide`。
 
 ### .toneMapped : boolean
 
-Defines whether this material is tone mapped according to the renderer's tone mapping setting.
+定义该材质是否按渲染器的色调映射设置进行色调映射。
 
-It is ignored when rendering to a render target or using post processing or when using `WebGPURenderer`. In all these cases, all materials are honored by tone mapping.
+渲染到渲染目标、使用后期处理或使用 `WebGPURenderer` 时该属性被忽略;在以上情形中,所有材质都会参与色调映射。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .transparent : boolean
 
-Defines whether this material is transparent. This has an effect on rendering as transparent objects need special treatment and are rendered after non-transparent objects.
+定义该材质是否透明。这会影响渲染流程,因为透明对象需要特殊处理,且会在不透明对象之后渲染。
 
-When set to true, the extent to which the material is transparent is controlled by [Material#opacity](Material.html#opacity).
+设为 `true` 时,材质的透明程度由 [Material#opacity](Material.html#opacity) 控制。
 
-Default is `false`.
+默认值为 `false`。
 
-### .type : string (readonly)
+### .type : string (只读)
 
-The type property is used for detecting the object type in context of serialization/deserialization.
+`type` 属性用于在序列化/反序列化场景中识别对象类型。
 
 ### .userData : Object
 
-An object that can be used to store custom data about the Material. It should not hold references to functions as these will not be cloned.
+可用于存储该材质自定义数据的对象。不应在其中保存函数引用,因为函数不会被克隆。
 
-### .uuid : string (readonly)
+### .uuid : string (只读)
 
-The UUID of the material.
+该材质的 UUID。
 
-### .version : number (readonly)
+### .version : number (只读)
 
-This starts at `0` and counts how many times [Material#needsUpdate](Material.html#needsUpdate) is set to `true`.
+从 `0` 开始,记录 [Material#needsUpdate](Material.html#needsUpdate) 被设为 `true` 的次数。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .vertexColors : boolean
 
-If set to `true`, vertex colors should be used.
+设为 `true` 时,使用顶点颜色。
 
-The engine supports RGB and RGBA vertex colors depending on whether a three (RGB) or four (RGBA) component color buffer attribute is used.
+引擎同时支持 RGB 与 RGBA 顶点颜色,取决于使用三分量(RGB)还是四分量(RGBA)的颜色缓冲区属性。
 
-Default is `false`.
+默认值为 `false`。
 
 ### .visible : boolean
 
-Defines whether 3D objects using this material are visible.
+定义使用该材质的 3D 对象是否可见。
 
-Default is `true`.
+默认值为 `true`。
 
-## Methods
+## 方法
 
 ### .clone() : Material
 
-Returns a new material with copied values from this instance.
+返回一个复制了该实例取值的新材质。
 
-**Returns:** A clone of this instance.
+**返回值:** 该实例的克隆。
 
 ### .copy( source : Material ) : Material
 
-Copies the values of the given material to this instance.
+将给定材质的取值复制到该实例。
 
 **source**
 
-The material to copy.
+要复制的材质。
 
-**Returns:** A reference to this instance.
-
-### .customProgramCacheKey() : string
-
-In case [Material#onBeforeCompile](Material.html#onBeforeCompile) is used, this callback can be used to identify values of settings used in `onBeforeCompile()`, so three.js can reuse a cached shader or recompile the shader for this material as needed.
-
-This method can only be used when rendering with [WebGLRenderer](WebGLRenderer.html).
-
-**Returns:** The custom program cache key.
+**返回值:** 该实例的引用。
 
 ### .dispose()
 
-Frees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.
+释放该实例分配的 GPU 相关资源。当应用中不再使用该实例时,应调用此方法。
 
-##### Fires:
+**触发事件:**
 
 *   [Material#event:dispose](Material.html#event:dispose)
 
-### .fromJSON( json : Object, textures : Object.<string, Texture> ) : Material
-
-Deserializes the material from the given JSON.
-
-**json**
-
-The JSON holding the serialized material.
-
-**textures**
-
-A dictionary holding textures referenced by the material.
-
-**Returns:** A reference to this material.
-
 ### .onBeforeCompile( shaderobject : Object, renderer : WebGLRenderer )
 
-An optional callback that is executed immediately before the shader program is compiled. This function is called with the shader source code as a parameter. Useful for the modification of built-in materials.
+可选回调,在着色器程序编译前一刻执行。函数会收到着色器源码作为参数,适合用来修改内置材质。
 
-This method can only be used when rendering with [WebGLRenderer](WebGLRenderer.html). The recommended approach when customizing materials is to use `WebGPURenderer` with the new Node Material system and [TSL](https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language).
+该方法只能在 [WebGLRenderer](WebGLRenderer.html) 渲染时使用。定制材质的推荐做法是改用 `WebGPURenderer` 配合新的 Node Material 体系与 [TSL](https://github.com/mrdoob/three.js/wiki/Three.js-Shading-Language)。
 
 **shaderobject**
 
-The object holds the uniforms and the vertex and fragment shader source.
+保存 uniforms 以及顶点、片元着色器源码的对象。
 
 **renderer**
 
-A reference to the renderer.
-
-### .onBeforeRender( renderer : WebGLRenderer, scene : Scene, camera : Camera, geometry : BufferGeometry, object : Object3D, group : Object )
-
-An optional callback that is executed immediately before the material is used to render a 3D object.
-
-This method can only be used when rendering with [WebGLRenderer](WebGLRenderer.html).
-
-**renderer**
-
-The renderer.
-
-**scene**
-
-The scene.
-
-**camera**
-
-The camera that is used to render the scene.
-
-**geometry**
-
-The 3D object's geometry.
-
-**object**
-
-The 3D object.
-
-**group**
-
-The geometry group data.
+渲染器的引用。
 
 ### .setValues( values : Object )
 
-This method can be used to set default values from parameter objects. It is a generic implementation so it can be used with different types of materials.
+可用于从参数对象设置默认值。这是一个通用实现,可用于不同类型的材质。
 
 **values**
 
-The material values to set.
+要设置的材质取值。
 
 ### .toJSON( meta : Object | string ) : Object
 
-Serializes the material into JSON.
+将材质序列化为 JSON。
 
 **meta**
 
-An optional value holding meta information about the serialization.
+可选,保存序列化元信息的值。
 
-See:
+参见:
 
 *   [ObjectLoader#parse](ObjectLoader.html#parse)
 
-**Returns:** A JSON object representing the serialized material.
+**返回值:** 表示序列化后材质的 JSON 对象。
 
-## Events
-
-### .dispose
-
-Fires when the material has been disposed of.
-
-##### Type:
-
-*   Object
-
-## Source
+## 源码
 
 [src/materials/Material.js](https://github.com/mrdoob/three.js/blob/master/src/materials/Material.js)

@@ -1,423 +1,349 @@
-*Inheritance: EventDispatcher →*
+> 🌐 本文档由 [mrdoob/three.js](https://github.com/mrdoob/three.js) 翻译,英文原版见原项目。
 
-# Texture
+*继承关系:EventDispatcher →*
 
-Base class for all textures.
+# Texture(纹理)
 
-Note: After the initial use of a texture, its dimensions, format, and type cannot be changed. Instead, call [Texture#dispose](Texture.html#dispose) on the texture and instantiate a new one.
+所有纹理的基类。
 
-## Constructor
+注意:纹理首次使用后,其尺寸、格式与类型不可再更改。此时应对该纹理调用 [Texture#dispose](Texture.html#dispose),然后重新实例化一个新纹理。
+
+> 📝 本页原文超过 10000 字符,以下翻译核心章节;次要属性(`.channel`、`.depth`、`.internalFormat`、`.normalized`、`.unpackAlignment`、`.updateRanges`、`.pmremVersion`、`.renderTarget`)、局部更新方法(`addUpdateRange()` / `clearUpdateRanges()`)与 `Events` 事件小节请参阅[英文原版](https://github.com/mrdoob/three.js/blob/master/docs/pages/Texture.html.md)。
+
+## 构造函数
 
 ### new Texture( image : Object, mapping : number, wrapS : number, wrapT : number, magFilter : number, minFilter : number, format : number, type : number, anisotropy : number, colorSpace : string )
 
-Constructs a new texture.
+创建一个新纹理。
 
 **image**
 
-The image holding the texture data.
+承载纹理数据的图像。
 
-Default is `Texture.DEFAULT_IMAGE`.
+默认值为 `Texture.DEFAULT_IMAGE`。
 
 **mapping**
 
-The texture mapping.
+纹理映射方式。
 
-Default is `Texture.DEFAULT_MAPPING`.
+默认值为 `Texture.DEFAULT_MAPPING`。
 
 **wrapS**
 
-The wrapS value.
+wrapS 取值。
 
-Default is `ClampToEdgeWrapping`.
+默认值为 `ClampToEdgeWrapping`。
 
 **wrapT**
 
-The wrapT value.
+wrapT 取值。
 
-Default is `ClampToEdgeWrapping`.
+默认值为 `ClampToEdgeWrapping`。
 
 **magFilter**
 
-The mag filter value.
+放大(magnification)过滤器取值。
 
-Default is `LinearFilter`.
+默认值为 `LinearFilter`。
 
 **minFilter**
 
-The min filter value.
+缩小(minification)过滤器取值。
 
-Default is `LinearMipmapLinearFilter`.
+默认值为 `LinearMipmapLinearFilter`。
 
 **format**
 
-The texture format.
+纹理格式。
 
-Default is `RGBAFormat`.
+默认值为 `RGBAFormat`。
 
 **type**
 
-The texture type.
+纹理类型。
 
-Default is `UnsignedByteType`.
+默认值为 `UnsignedByteType`。
 
 **anisotropy**
 
-The anisotropy value.
+各向异性(anisotropy)取值。
 
-Default is `Texture.DEFAULT_ANISOTROPY`.
+默认值为 `Texture.DEFAULT_ANISOTROPY`。
 
 **colorSpace**
 
-The color space.
+色彩空间。
 
-Default is `NoColorSpace`.
+默认值为 `NoColorSpace`。
 
-## Properties
+## 属性
 
 ### .anisotropy : number
 
-The number of samples taken along the axis through the pixel that has the highest density of texels. By default, this value is `1`. A higher value gives a less blurry result than a basic mipmap, at the cost of more texture samples being used.
+沿穿过纹素(texel)密度最高的像素的轴所采样的样本数。默认值为 `1`。更高的取值可以获得比普通 mipmap 更不模糊的结果,代价是使用更多纹理采样。
 
-Default is `Texture.DEFAULT_ANISOTROPY`.
+默认值为 `Texture.DEFAULT_ANISOTROPY`。
 
 ### .center : Vector2
 
-The point around which rotation occurs. A value of `(0.5, 0.5)` corresponds to the center of the texture. Default is `(0, 0)`, the lower left.
+旋转所围绕的中心点。`(0.5, 0.5)` 对应纹理中心。默认值为 `(0, 0)`,即左下角。
 
-Default is `(0,0)`.
-
-### .channel : number
-
-Lets you select the uv attribute to map the texture to. `0` for `uv`, `1` for `uv1`, `2` for `uv2` and `3` for `uv3`.
-
-Default is `0`.
+默认值为 `(0,0)`。
 
 ### .colorSpace : string
 
-Textures containing color data should be annotated with `SRGBColorSpace` or `LinearSRGBColorSpace`.
+包含颜色数据的纹理应标注为 `SRGBColorSpace` 或 `LinearSRGBColorSpace`。
 
-Default is `NoColorSpace`.
-
-### .depth
-
-The depth of the texture in pixels.
+默认值为 `NoColorSpace`。
 
 ### .flipY : boolean
 
-If set to `true`, the texture is flipped along the vertical axis when uploaded to the GPU.
+设为 `true` 时,纹理在上传到 GPU 时会沿垂直轴翻转。
 
-Note that this property has no effect when using `ImageBitmap`. You need to configure the flip on bitmap creation instead.
+注意:使用 `ImageBitmap` 时该属性无效,需要在创建位图时配置翻转。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .format : number
 
-The format of the texture.
+纹理的格式。
 
-Default is `RGBAFormat`.
+默认值为 `RGBAFormat`。
 
 ### .generateMipmaps : boolean
 
-Whether to generate mipmaps (if possible) for a texture.
+是否为纹理生成 mipmap(如可能)。
 
-Set this to `false` if you are creating mipmaps manually.
+若你手动创建 mipmap,请将其设为 `false`。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .height
 
-The height of the texture in pixels.
+纹理的高度,单位为像素。
 
-### .id : number (readonly)
+### .id : number (只读)
 
-The ID of the texture.
+该纹理的 ID。
 
 ### .image : Object
 
-The image object holding the texture data.
+承载纹理数据的图像对象。
 
-### .internalFormat : string
+### .isArrayTexture : boolean (只读)
 
-The default internal format is derived from [Texture#format](Texture.html#format) and [Texture#type](Texture.html#type) and defines how the texture data is going to be stored on the GPU.
+指示该纹理是否应按纹理数组(texture array)处理。
 
-This property allows to overwrite the default format.
+默认值为 `false`。
 
-Default is `null`.
+### .isRenderTargetTexture : boolean (只读)
 
-### .isArrayTexture : boolean (readonly)
+指示该纹理是否属于某个渲染目标。
 
-Indicates if a texture should be handled like a texture array.
+默认值为 `false`。
 
-Default is `false`.
+### .isTexture : boolean (只读)
 
-### .isRenderTargetTexture : boolean (readonly)
+该标志可用于类型判断。
 
-Indicates whether a texture belongs to a render target or not.
-
-Default is `false`.
-
-### .isTexture : boolean (readonly)
-
-This flag can be used for type testing.
-
-Default is `true`.
+默认值为 `true`。
 
 ### .magFilter : NearestFilter | NearestMipmapNearestFilter | NearestMipmapLinearFilter | LinearFilter | LinearMipmapNearestFilter | LinearMipmapLinearFilter
 
-How the texture is sampled when a texel covers more than one pixel.
+当一个纹素覆盖多个像素时,纹理的采样方式。
 
-Default is `LinearFilter`.
+默认值为 `LinearFilter`。
 
 ### .mapping : UVMapping | CubeReflectionMapping | CubeRefractionMapping | EquirectangularReflectionMapping | EquirectangularRefractionMapping | CubeUVReflectionMapping
 
-How the texture is applied to the object. The value `UVMapping` is the default, where texture or uv coordinates are used to apply the map.
+纹理贴附到对象上的方式。默认值 `UVMapping` 表示使用纹理坐标(uv)来应用贴图。
 
-Default is `UVMapping`.
+默认值为 `UVMapping`。
 
 ### .matrix : Matrix3
 
-The uv-transformation matrix of the texture.
+纹理的 UV 变换矩阵。
 
 ### .matrixAutoUpdate : boolean
 
-Whether to update the texture's uv-transformation [Texture#matrix](Texture.html#matrix) from the properties [Texture#offset](Texture.html#offset), [Texture#repeat](Texture.html#repeat), [Texture#rotation](Texture.html#rotation), and [Texture#center](Texture.html#center).
+是否根据 [Texture#offset](Texture.html#offset)、[Texture#repeat](Texture.html#repeat)、[Texture#rotation](Texture.html#rotation) 与 [Texture#center](Texture.html#center) 属性自动更新纹理的 UV 变换矩阵 [Texture#matrix](Texture.html#matrix)。
 
-Set this to `false` if you are specifying the uv-transform matrix directly.
+若要直接指定 UV 变换矩阵,请将其设为 `false`。
 
-Default is `true`.
+默认值为 `true`。
 
 ### .minFilter : NearestFilter | NearestMipmapNearestFilter | NearestMipmapLinearFilter | LinearFilter | LinearMipmapNearestFilter | LinearMipmapLinearFilter
 
-How the texture is sampled when a texel covers less than one pixel.
+当一个纹素覆盖不足一个像素时,纹理的采样方式。
 
-Default is `LinearMipmapLinearFilter`.
+默认值为 `LinearMipmapLinearFilter`。
 
 ### .mipmaps : Array.<Object>
 
-An array holding user-defined mipmaps.
+保存用户自定义 mipmap 的数组。
 
 ### .name : string
 
-The name of the texture.
-
-### .needsPMREMUpdate : boolean
-
-Setting this property to `true` indicates the engine the PMREM must be regenerated.
-
-Default is `false`.
+该纹理的名称。
 
 ### .needsUpdate : boolean
 
-Setting this property to `true` indicates the engine the texture must be updated in the next render. This triggers a texture upload to the GPU and ensures correct texture parameter configuration.
+将该属性设为 `true` 表示引擎必须在下一次渲染时更新该纹理。这会触发纹理向 GPU 的上传,并确保纹理参数被正确配置。
 
-Default is `false`.
-
-### .normalized : boolean
-
-Whether the texture should use one of the 16 bit integer formats which are normalized to \[0, 1\] or \[-1, 1\] (depending on signed/unsigned) when sampled.
-
-Default is `false`.
+默认值为 `false`。
 
 ### .offset : Vector2
 
-How much a single repetition of the texture is offset from the beginning, in each direction U and V. Typical range is `0.0` to `1.0`.
+纹理单次重复在每个方向(U 与 V)上相对起点的偏移量。典型范围为 `0.0` 到 `1.0`。
 
-Default is `(0,0)`.
+默认值为 `(0,0)`。
 
 ### .onUpdate : function
 
-A callback function, called when the texture is updated (e.g., when [Texture#needsUpdate](Texture.html#needsUpdate) has been set to true and then the texture is used).
+回调函数,在纹理被更新时调用(例如 [Texture#needsUpdate](Texture.html#needsUpdate) 被设为 `true` 之后、纹理被使用时)。
 
-Default is `null`.
-
-### .pmremVersion : number (readonly)
-
-Indicates whether this texture should be processed by `PMREMGenerator` or not (only relevant for render target textures).
-
-Default is `0`.
+默认值为 `null`。
 
 ### .premultiplyAlpha : boolean
 
-If set to `true`, the alpha channel, if present, is multiplied into the color channels when the texture is uploaded to the GPU.
+设为 `true` 时,纹理上传到 GPU 时若有 alpha 通道,会将其预乘进颜色通道。
 
-Note that this property has no effect when using `ImageBitmap`. You need to configure premultiply alpha on bitmap creation instead.
+注意:使用 `ImageBitmap` 时该属性无效,需要在创建位图时配置预乘 alpha。
 
-Default is `false`.
-
-### .renderTarget : RenderTarget | WebGLRenderTarget
-
-An optional back reference to the textures render target.
-
-Default is `null`.
+默认值为 `false`。
 
 ### .repeat : Vector2
 
-How many times the texture is repeated across the surface, in each direction U and V. If repeat is set greater than `1` in either direction, the corresponding wrap parameter should also be set to `RepeatWrapping` or `MirroredRepeatWrapping` to achieve the desired tiling effect.
+纹理在表面上的重复次数,分 U 与 V 两个方向。若任一方向的 repeat 大于 `1`,应把对应的 wrap 参数也设为 `RepeatWrapping` 或 `MirroredRepeatWrapping`,以获得预期的平铺效果。
 
-Default is `(1,1)`.
+默认值为 `(1,1)`。
 
 ### .rotation : number
 
-How much the texture is rotated around the center point, in radians. Positive values are counter-clockwise.
+纹理绕中心点旋转的角度,单位为弧度。正值表示逆时针。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .source : Source
 
-The data definition of a texture. A reference to the data source can be shared across textures. This is often useful in context of spritesheets where multiple textures render the same data but with different texture transformations.
+纹理的数据定义。对数据源的引用可以在多个纹理之间共享,这在精灵图(spritesheet)场景中特别有用:多个纹理渲染同一份数据,但应用不同的纹理变换。
 
 ### .type : number
 
-The data type of the texture.
+纹理的数据类型。
 
-Default is `UnsignedByteType`.
-
-### .unpackAlignment : number
-
-Specifies the alignment requirements for the start of each pixel row in memory. The allowable values are `1` (byte-alignment), `2` (rows aligned to even-numbered bytes), `4` (word-alignment), and `8` (rows start on double-word boundaries).
-
-Default is `4`.
-
-### .updateRanges : Array.<Object>
-
-This can be used to only update a subregion or specific rows of the texture (for example, just the first 3 rows). Use the `addUpdateRange()` function to add ranges to this array.
+默认值为 `UnsignedByteType`。
 
 ### .userData : Object
 
-An object that can be used to store custom data about the texture. It should not hold references to functions as these will not be cloned.
+可用于存储该纹理自定义数据的对象。不应在其中保存函数引用,因为函数不会被克隆。
 
-### .uuid : string (readonly)
+### .uuid : string (只读)
 
-The UUID of the texture.
+该纹理的 UUID。
 
-### .version : number (readonly)
+### .version : number (只读)
 
-This starts at `0` and counts how many times [Texture#needsUpdate](Texture.html#needsUpdate) is set to `true`.
+从 `0` 开始,记录 [Texture#needsUpdate](Texture.html#needsUpdate) 被设为 `true` 的次数。
 
-Default is `0`.
+默认值为 `0`。
 
 ### .width
 
-The width of the texture in pixels.
+纹理的宽度,单位为像素。
 
 ### .wrapS : RepeatWrapping | ClampToEdgeWrapping | MirroredRepeatWrapping
 
-This defines how the texture is wrapped horizontally and corresponds to _U_ in UV mapping.
+定义纹理的水平包裹方式,对应 UV 映射中的 _U_。
 
-Default is `ClampToEdgeWrapping`.
+默认值为 `ClampToEdgeWrapping`。
 
 ### .wrapT : RepeatWrapping | ClampToEdgeWrapping | MirroredRepeatWrapping
 
-This defines how the texture is wrapped horizontally and corresponds to _V_ in UV mapping.
+定义纹理的垂直包裹方式,对应 UV 映射中的 _V_。
 
-Default is `ClampToEdgeWrapping`.
+默认值为 `ClampToEdgeWrapping`。
 
 ### .DEFAULT_ANISOTROPY : number
 
-The default anisotropy value for all textures.
+所有纹理的默认各向异性取值。
 
-Default is `1`.
+默认值为 `1`。
 
 ### .DEFAULT_IMAGE : Image
 
-The default image for all textures.
+所有纹理的默认图像。
 
-Default is `null`.
+默认值为 `null`。
 
 ### .DEFAULT_MAPPING : number
 
-The default mapping for all textures.
+所有纹理的默认映射方式。
 
-Default is `UVMapping`.
+默认值为 `UVMapping`。
 
-## Methods
-
-### .addUpdateRange( start : number, count : number )
-
-Adds a range of data in the data texture to be updated on the GPU.
-
-**start**
-
-Position at which to start update.
-
-**count**
-
-The number of components to update.
-
-### .clearUpdateRanges()
-
-Clears the update ranges.
+## 方法
 
 ### .clone() : Texture
 
-Returns a new texture with copied values from this instance.
+返回一个复制了该实例取值的新纹理。
 
-**Returns:** A clone of this instance.
+**返回值:** 该实例的克隆。
 
 ### .copy( source : Texture ) : Texture
 
-Copies the values of the given texture to this instance.
+将给定纹理的取值复制到该实例。
 
 **source**
 
-The texture to copy.
+要复制的纹理。
 
-**Returns:** A reference to this instance.
+**返回值:** 该实例的引用。
 
 ### .dispose()
 
-Frees the GPU-related resources allocated by this instance. Call this method whenever this instance is no longer used in your app.
+释放该实例分配的 GPU 相关资源。当应用中不再使用该实例时,应调用此方法。
 
-##### Fires:
+**触发事件:**
 
 *   [Texture#event:dispose](Texture.html#event:dispose)
 
 ### .setValues( values : Object )
 
-Sets this texture's properties based on `values`.
+基于 `values` 设置该纹理的属性。
 
 **values**
 
-A container with texture parameters.
+包含纹理参数的容器。
 
 ### .toJSON( meta : Object | string ) : Object
 
-Serializes the texture into JSON.
+将纹理序列化为 JSON。
 
 **meta**
 
-An optional value holding meta information about the serialization.
+可选,保存序列化元信息的值。
 
-See:
+参见:
 
 *   [ObjectLoader#parse](ObjectLoader.html#parse)
 
-**Returns:** A JSON object representing the serialized texture.
+**返回值:** 表示序列化后纹理的 JSON 对象。
 
 ### .transformUv( uv : Vector2 ) : Vector2
 
-Transforms the given uv vector with the textures uv transformation matrix.
+用该纹理的 UV 变换矩阵变换给定的 uv 向量。
 
 **uv**
 
-The uv vector.
+uv 向量。
 
-**Returns:** The transformed uv vector.
+**返回值:** 变换后的 uv 向量。
 
 ### .updateMatrix()
 
-Updates the texture transformation matrix from the properties [Texture#offset](Texture.html#offset), [Texture#repeat](Texture.html#repeat), [Texture#rotation](Texture.html#rotation), and [Texture#center](Texture.html#center).
+根据 [Texture#offset](Texture.html#offset)、[Texture#repeat](Texture.html#repeat)、[Texture#rotation](Texture.html#rotation) 与 [Texture#center](Texture.html#center) 属性更新纹理变换矩阵。
 
-## Events
-
-### .dispose
-
-Fires when the texture has been disposed of.
-
-##### Type:
-
-*   Object
-
-## Source
+## 源码
 
 [src/textures/Texture.js](https://github.com/mrdoob/three.js/blob/master/src/textures/Texture.js)
